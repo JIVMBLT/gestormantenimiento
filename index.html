@@ -1,3 +1,4 @@
+<!-- index_AutoRefresh5minv1 | BLT Brilliant — Gestión de Mantenimientos | Jun 2026 -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -1504,6 +1505,7 @@ tbody tr:nth-child(even) td.pin{background:#F8FAFC}
 
 
 
+
 window._VOLTAJE_KW = ['voltaje','variacion de voltaje','variación de voltaje','sobre voltaje','bajo voltaje','pico de voltaje','falla electrica','falla eléctrica','corte de luz','falla de energia','falla de energía','sin energia','sin energía','apagon','apagón'];
 
 function initResumen() {
@@ -1862,6 +1864,8 @@ function _refreshAfterLoad() {
   if (activeTab === 'home') initHome();
   if (activeTab === 'resumen')    initResumen();
   if (activeTab === 'proyectos') initProyectos();
+  // Start auto-refresh after first load
+  if (!_autoRefreshInterval) startAutoRefresh();
 }
 
 
@@ -2476,6 +2480,36 @@ async function enrichPFDataFromSupabase() {
   } catch(e) {
     window._enrichPending = false;
     console.warn('[SB] enrichPFData error:', e);
+  }
+}
+
+// ── Auto-refresh cada 5 minutos ──────────────────────────────────────
+var _autoRefreshInterval = null;
+
+function startAutoRefresh() {
+  if (_autoRefreshInterval) clearInterval(_autoRefreshInterval);
+  _autoRefreshInterval = setInterval(function() {
+    console.log('[AutoRefresh] Actualizando datos...');
+    var activeTab = (function(){
+      var _n = document.querySelector('.nav-btn.on');
+      return _n ? _n.id.replace('tab-','') : 'home';
+    })();
+    // Silent reload - no show loading bar
+    loadFromSupabase && loadFromSupabase();
+    // Update status bar
+    var sync = document.getElementById('sb-last-sync');
+    if (sync) {
+      var now = new Date();
+      sync.textContent = 'Auto-sync ' + now.getHours() + ':' + String(now.getMinutes()).padStart(2,'0');
+    }
+  }, 5 * 60 * 1000); // 5 minutos
+  console.log('[AutoRefresh] Iniciado — cada 5 minutos');
+}
+
+function stopAutoRefresh() {
+  if (_autoRefreshInterval) {
+    clearInterval(_autoRefreshInterval);
+    _autoRefreshInterval = null;
   }
 }
 
@@ -5016,6 +5050,7 @@ if (document.readyState === 'loading') {
   showTab('home');
   setTimeout(loadFromSupabase, 100);
 }
+
 
 
 
