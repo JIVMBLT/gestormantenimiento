@@ -26,7 +26,7 @@ html,body{height:100%;overflow:hidden}
 .nav-btn.on{color:#fff;font-weight:500;border-bottom-color:#E87722}
 /* PANELS */
 .panel{display:none;padding:20px}
-.panel.on{display:block;overflow-y:auto;-webkit-overflow-scrolling:touch;height:calc(100vh - 100px)}
+.panel.on{display:block;overflow-y:auto;-webkit-overflow-scrolling:touch;position:fixed;top:0;left:0;right:0;bottom:0;z-index:9;background:#F0F4F8;padding-top:130px}
 /* SHARED */
 .card{background:#fff;border:1px solid #0D2E6E;border-radius:12px;box-shadow:0 2px 8px rgba(13,46,110,.08)}
 .btn{height:32px;padding:0 12px;border-radius:6px;border:1px solid #0D2E6E;background:#fff;color:#334155;font-size:12px;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
@@ -194,7 +194,8 @@ tbody tr:nth-child(even) td.pin{background:#F8FAFC}
 .nav::-webkit-scrollbar{display:none}
 .home-btn-hidden{display:none}.home-btn-visible{display:inline-flex;align-items:center;gap:4px}
 @keyframes sbPulse{0%,100%{opacity:1}50%{opacity:.3}}
-</style>
+
+#api-bar,#sb-status-bar{position:relative;z-index:20}</style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 </head>
@@ -451,6 +452,9 @@ tbody tr:nth-child(even) td.pin{background:#F8FAFC}
      PANEL: DASHBOARD
 ════════════════════════════════════════════════════════ -->
 <!-- PANEL: RESUMEN DEL DÍA -->
+<!-- ═══════════════════════════════════════════
+     MÓDULO: Resumen del Día
+════════════════════════════════════════════ -->
 <div id="panel-resumen" class="panel">
 
   <!-- Day navigator -->
@@ -572,22 +576,22 @@ tbody tr:nth-child(even) td.pin{background:#F8FAFC}
 
   <!-- GRÁFICAS: 2x2 grid, full width, altura libre -->
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
-    <div class="card" style="padding:16px">
+    <div class="card" style="padding:16px;border-radius:12px">
       <p style="font-size:11px;font-weight:600;color:#0D2E6E;text-transform:uppercase;letter-spacing:.04em;margin-bottom:10px">Estado tickets</p>
       <svg id="rd-svg-estado" width="170" height="170" viewBox="0 0 130 130" style="display:block;margin:0 auto"></svg>
       <div id="rd-leg-estado" style="display:flex;flex-direction:column;gap:4px;margin-top:8px"></div>
     </div>
-    <div class="card" style="padding:16px">
+    <div class="card" style="padding:16px;border-radius:12px">
       <p style="font-size:11px;font-weight:600;color:#0D2E6E;text-transform:uppercase;letter-spacing:.04em;margin-bottom:10px">Responsabilidad</p>
       <svg id="rd-svg-resp" width="170" height="170" viewBox="0 0 130 130" style="display:block;margin:0 auto"></svg>
       <div id="rd-leg-resp" style="display:flex;flex-direction:column;gap:4px;margin-top:8px"></div>
     </div>
-    <div class="card" style="padding:16px">
+    <div class="card" style="padding:16px;border-radius:12px">
       <p style="font-size:11px;font-weight:600;color:#0D2E6E;text-transform:uppercase;letter-spacing:.04em;margin-bottom:10px">Causa falla — BLT</p>
       <svg id="rd-svg-caf-blt" width="170" height="170" viewBox="0 0 130 130" style="display:block;margin:0 auto"></svg>
       <div id="rd-leg-caf-blt" style="display:flex;flex-direction:column;gap:4px;margin-top:8px"></div>
     </div>
-    <div class="card" style="padding:16px">
+    <div class="card" style="padding:16px;border-radius:12px">
       <p style="font-size:11px;font-weight:600;color:#0D2E6E;text-transform:uppercase;letter-spacing:.04em;margin-bottom:10px">Causa falla — Cliente</p>
       <svg id="rd-svg-caf-cli" width="170" height="170" viewBox="0 0 130 130" style="display:block;margin:0 auto"></svg>
       <div id="rd-leg-caf-cli" style="display:flex;flex-direction:column;gap:4px;margin-top:8px"></div>
@@ -643,15 +647,9 @@ tbody tr:nth-child(even) td.pin{background:#F8FAFC}
 </div>
 
 
-<!-- ═══════════════════════════════════════════════════════
-     PANEL: USUARIOS
-════════════════════════════════════════════════════════ -->
-<!-- ═══════════════════════════════════════════════════════
-     PANEL: DASHBOARD CUMPLIMIENTOS
-════════════════════════════════════════════════════════ -->
-<!-- ═══════════════════════════════════════════════════════
-     PANEL: DASHBOARD PORTAFOLIO
-════════════════════════════════════════════════════════ -->
+<!-- ═══════════════════════════════════════════
+     MÓDULO: Dashboard Call Center
+════════════════════════════════════════════ -->
 <div id="panel-callcenter" class="panel">
 
   <!-- Filtro de período -->
@@ -805,6 +803,48 @@ tbody tr:nth-child(even) td.pin{background:#F8FAFC}
   </div>
 
   <!-- TABLA -->
+  <!-- Tabla: Equipos con más llamadas -->
+  <div class="card" style="padding:16px;margin-bottom:16px;border-radius:12px">
+    <h3 style="font-size:13px;font-weight:700;color:#0D2E6E;margin-bottom:12px">&#128222; Equipos con más llamadas en el período</h3>
+    <div style="overflow-x:auto">
+      <table style="width:100%;border-collapse:collapse;min-width:700px">
+        <thead style="background:#0D2E6E">
+          <tr>
+            <th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:rgba(255,255,255,.85)">Zona</th>
+            <th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:rgba(255,255,255,.85)">Proyecto</th>
+            <th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:rgba(255,255,255,.85)">Ref. en sitio</th>
+            <th style="padding:8px 12px;text-align:center;font-size:11px;font-weight:600;color:rgba(255,255,255,.85)">Llamadas</th>
+            <th style="padding:8px 12px;text-align:center;font-size:11px;font-weight:600;color:rgba(255,255,255,.85)">Resp. BLT</th>
+            <th style="padding:8px 12px;text-align:center;font-size:11px;font-weight:600;color:rgba(255,255,255,.85)">Resp. Cliente</th>
+            <th style="padding:8px 12px;text-align:center;font-size:11px;font-weight:600;color:rgba(255,255,255,.85)">Crítico</th>
+          </tr>
+        </thead>
+        <tbody id="cc-top-equipos-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Tabla: Proyectos con más llamadas -->
+  <div class="card" style="padding:16px;margin-bottom:16px;border-radius:12px">
+    <h3 style="font-size:13px;font-weight:700;color:#0D2E6E;margin-bottom:12px">&#127970; Proyectos con más llamadas en el período</h3>
+    <div style="overflow-x:auto">
+      <table style="width:100%;border-collapse:collapse;min-width:700px">
+        <thead style="background:#0D2E6E">
+          <tr>
+            <th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:rgba(255,255,255,.85)">Zona</th>
+            <th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:rgba(255,255,255,.85)">Proyecto</th>
+            <th style="padding:8px 12px;text-align:center;font-size:11px;font-weight:600;color:rgba(255,255,255,.85)">Equipos activos</th>
+            <th style="padding:8px 12px;text-align:center;font-size:11px;font-weight:600;color:rgba(255,255,255,.85)">Llamadas</th>
+            <th style="padding:8px 12px;text-align:center;font-size:11px;font-weight:600;color:rgba(255,255,255,.85)">Resp. BLT</th>
+            <th style="padding:8px 12px;text-align:center;font-size:11px;font-weight:600;color:rgba(255,255,255,.85)">Resp. Cliente</th>
+            <th style="padding:8px 12px;text-align:center;font-size:11px;font-weight:600;color:rgba(255,255,255,.85)">Críticos</th>
+          </tr>
+        </thead>
+        <tbody id="cc-top-proyectos-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
   <div class="card" style="padding:16px">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
       <h3 style="font-size:13px;font-weight:700;color:#0D2E6E">
@@ -830,6 +870,11 @@ tbody tr:nth-child(even) td.pin{background:#F8FAFC}
       <tbody id="cc-tbl-body"></tbody>
     </table>
     </div>
+    <div id="cc-pagination" style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:#F8FAFC;border-top:1px solid #E2E8F0">
+      <button id="cc-page-prev" onclick="ccChangePage(-1)" style="height:28px;padding:0 12px;border:1px solid #CBD5E1;border-radius:6px;background:#fff;color:#0D2E6E;font-size:12px;cursor:pointer">&#8592; Anterior</button>
+      <span id="cc-page-info" style="font-size:12px;color:#64748B"></span>
+      <button id="cc-page-next" onclick="ccChangePage(1)" style="height:28px;padding:0 12px;border:1px solid #CBD5E1;border-radius:6px;background:#fff;color:#0D2E6E;font-size:12px;cursor:pointer">Siguiente &#8594;</button>
+    </div>
   </div>
 
 
@@ -837,66 +882,448 @@ tbody tr:nth-child(even) td.pin{background:#F8FAFC}
 
   <!-- EQUIPOS CRÍTICOS DEL PERÍODO -->
   
-  <!-- Mensajes no leídos -->
-  <div style="background:#fff;border:1px solid #0D2E6E;border-radius:12px;overflow:hidden;margin-top:16px">
-    <div style="padding:12px 16px;border-bottom:1px solid rgba(13,46,110,.18);display:flex;align-items:center;gap:10px">
-      <p style="font-size:13px;font-weight:700;color:#0D2E6E">&#128276; Mensajes no leídos</p>
-      <span id="dash-mensajes-badge" style="display:none;background:#DC2626;color:#fff;border-radius:50%;width:20px;height:20px;font-size:11px;font-weight:700;align-items:center;justify-content:center">0</span>
-      <span style="font-size:11px;color:#94A3B8;margin-left:auto">Click en el ticket para abrirlo y marcarlo como leído</span>
-    </div>
-    <div style="overflow-x:auto">
-      <table style="width:100%;border-collapse:collapse;min-width:600px">
-        <thead style="background:#334155"><tr>
-          <th style="padding:9px 12px;text-align:left;font-size:11px;font-weight:600;color:rgba(255,255,255,.85)">Ticket</th>
-          <th style="padding:9px 12px;text-align:left;font-size:11px;font-weight:600;color:rgba(255,255,255,.85)">Asunto</th>
-          <th style="padding:9px 12px;text-align:left;font-size:11px;font-weight:600;color:rgba(255,255,255,.85)">Proyecto</th>
-          <th style="padding:9px 12px;text-align:left;font-size:11px;font-weight:600;color:rgba(255,255,255,.85)">Último mensaje de</th>
-          <th style="padding:9px 12px;text-align:left;font-size:11px;font-weight:600;color:rgba(255,255,255,.85)">Mensaje</th>
-          <th style="padding:9px 12px;text-align:center;font-size:11px;font-weight:600;color:rgba(255,255,255,.85)">Estado</th>
-        </tr></thead>
-        <tbody id="dash-mensajes-tbody"></tbody>
-      </table>
-    </div>
-  </div>
+  
+// === renderCCTopTablas ===
+function renderCCTopTablas(tks) {
+  // ── Top 20 Equipos ─────────────────────────────────────────────
+  var eqMap = {};
+  tks.forEach(function(t) {
+    if (!t.cod) return;
+    if (!eqMap[t.cod]) {
+      var pf = PF_DATA.find(function(e){ return e.cod === t.cod; });
+      eqMap[t.cod] = {
+        cod:  t.cod,
+        zon:  t.zon  || (pf ? pf.zon : '—'),
+        pro:  t.pro  || (pf ? pf.pro : '—'),
+        ref:  pf ? (pf.ref || '—') : '—',
+        blt:  0,
+        cli:  0,
+        total: 0
+      };
+    }
+    eqMap[t.cod].total++;
+    if (t.res === 'BLT')     eqMap[t.cod].blt++;
+    if (t.res === 'CLIENTE') eqMap[t.cod].cli++;
+  });
 
-</div>
+  var topEq = Object.values(eqMap)
+    .sort(function(a,b){ return b.total - a.total; })
+    .slice(0, 20);
 
+  var tbodyEq = document.getElementById('cc-top-equipos-tbody');
+  if (tbodyEq) {
+    tbodyEq.innerHTML = '';
+    if (!topEq.length) {
+      tbodyEq.innerHTML = '<tr><td colspan="7" style="padding:16px;text-align:center;color:#94A3B8;font-size:12px">Sin datos</td></tr>';
+    } else {
+      topEq.forEach(function(e) {
+        var critico = isCritico(e.cod) ? '💥' : '';
+        var tr = document.createElement('tr');
+        tr.style.cssText = 'border-bottom:1px solid #F1F5F9';
+        tr.innerHTML =
+          '<td style="padding:8px 12px;font-size:12px">' + e.zon + '</td>' +
+          '<td style="padding:8px 12px;font-size:12px">' + e.pro + '</td>' +
+          '<td style="padding:8px 12px;font-size:12px">' + e.ref + '</td>' +
+          '<td style="padding:8px 12px;font-size:12px;text-align:center;font-weight:700;color:#0D2E6E">' + e.total + '</td>' +
+          '<td style="padding:8px 12px;font-size:12px;text-align:center">' + e.blt + '</td>' +
+          '<td style="padding:8px 12px;font-size:12px;text-align:center">' + e.cli + '</td>' +
+          '<td style="padding:8px 12px;font-size:12px;text-align:center">' + critico + '</td>';
+        tbodyEq.appendChild(tr);
+      });
+    }
+  }
+
+  // ── Top Proyectos ───────────────────────────────────────────────
+  var proMap = {};
+  tks.forEach(function(t) {
+    if (!t.pro) return;
+    if (!proMap[t.pro]) {
+      // Get zona from first ticket or portafolio
+      var pf = PF_DATA.find(function(e){ return e.pro === t.pro; });
+      proMap[t.pro] = {
+        pro:   t.pro,
+        zon:   t.zon || (pf ? pf.zon : '—'),
+        blt:   0,
+        cli:   0,
+        total: 0
+      };
+    }
+    proMap[t.pro].total++;
+    if (t.res === 'BLT')     proMap[t.pro].blt++;
+    if (t.res === 'CLIENTE') proMap[t.pro].cli++;
+  });
+
+  var topPro = Object.values(proMap)
+    .sort(function(a,b){ return b.total - a.total; })
+    .slice(0, 20);
+
+  var tbodyPro = document.getElementById('cc-top-proyectos-tbody');
+  if (tbodyPro) {
+    tbodyPro.innerHTML = '';
+    if (!topPro.length) {
+      tbodyPro.innerHTML = '<tr><td colspan="7" style="padding:16px;text-align:center;color:#94A3B8;font-size:12px">Sin datos</td></tr>';
+    } else {
+      topPro.forEach(function(p) {
+        // Equipos activos en el proyecto
+        var activos = PF_DATA.filter(function(e){
+          return e.pro === p.pro && !e.inactivo && e.estatus !== 'No en Servicio';
+        }).length;
+        // Equipos críticos en el proyecto
+        var criticos = PF_DATA.filter(function(e){
+          return e.pro === p.pro && isCritico(e.cod);
+        }).length;
+        var critStr = criticos > 0 ? '💥 (' + criticos + ')' : '';
+        var tr = document.createElement('tr');
+        tr.style.cssText = 'border-bottom:1px solid #F1F5F9';
+        tr.innerHTML =
+          '<td style="padding:8px 12px;font-size:12px">' + p.zon + '</td>' +
+          '<td style="padding:8px 12px;font-size:12px;font-weight:600">' + p.pro + '</td>' +
+          '<td style="padding:8px 12px;font-size:12px;text-align:center">' + activos + '</td>' +
+          '<td style="padding:8px 12px;font-size:12px;text-align:center;font-weight:700;color:#0D2E6E">' + p.total + '</td>' +
+          '<td style="padding:8px 12px;font-size:12px;text-align:center">' + p.blt + '</td>' +
+          '<td style="padding:8px 12px;font-size:12px;text-align:center">' + p.cli + '</td>' +
+          '<td style="padding:8px 12px;font-size:12px;text-align:center">' + critStr + '</td>';
+        tbodyPro.appendChild(tr);
+      });
+    }
+  }
+}
+
+// === renderCCTable ===
+var _ccPage = 0;
+var _ccPageSize = 30;
+var _ccFiltered = [];
+
+function renderCCTable() {
+  const tks = (window._ccTks || []).slice().sort(function(a,b){
+    // Más nuevo primero: ordenar por fecha de reporte descendente
+    if ((b.fr||'') > (a.fr||'')) return 1;
+    if ((b.fr||'') < (a.fr||'')) return -1;
+    return (b.n||'') > (a.n||'') ? 1 : -1;
+  });
+  const search = ((document.getElementById('cc-search')&&document.getElementById('cc-search').value)||'').toLowerCase();
+  const fEt    = (document.getElementById('cc-filter-et')&&document.getElementById('cc-filter-et').value)||'';
+
+  _ccFiltered = tks;
+  if (search) _ccFiltered = _ccFiltered.filter(t=>((t.n||'')+(t.pro||'')+(t.asu||'')+(t.zon||'')).toLowerCase().includes(search));
+  if (fEt)    _ccFiltered = _ccFiltered.filter(t=>t.et===fEt);
+
+  _ccPage = 0; // reset to first page on filter change
+  _renderCCPage();
+}
+
+function ccChangePage(dir) {
+  var totalPages = Math.ceil(_ccFiltered.length / _ccPageSize);
+  _ccPage = Math.max(0, Math.min(_ccPage + dir, totalPages - 1));
+  _renderCCPage();
+}
+
+function _renderCCPage() {
+  var totalPages = Math.max(1, Math.ceil(_ccFiltered.length / _ccPageSize));
+  var start = _ccPage * _ccPageSize;
+  var pageItems = _ccFiltered.slice(start, start + _ccPageSize);
+
+  var cnt = document.getElementById('cc-count');
+  if (cnt) cnt.textContent = _ccFiltered.length + ' tickets';
+
+  var info = document.getElementById('cc-page-info');
+  if (info) info.textContent = 'Página ' + (_ccPage+1) + ' de ' + totalPages + ' (' + _ccFiltered.length + ' tickets)';
+
+  var prev = document.getElementById('cc-page-prev');
+  var next = document.getElementById('cc-page-next');
+  if (prev) prev.disabled = _ccPage === 0;
+  if (next) next.disabled = _ccPage >= totalPages - 1;
+
+  var visCols = _CC_COLS.filter(function(c){ return c.visible; });
+
+  var thead = document.getElementById('cc-tbl-thead');
+  if (thead) {
+    thead.innerHTML = '<tr>' + visCols.map(function(c) {
+      return '<th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:rgba(255,255,255,.85)">' + c.label + '</th>';
+    }).join('') + '</tr>';
+  }
+
+  var tbody = document.getElementById('cc-tbl-body');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+
+  if (!pageItems.length) {
+    tbody.innerHTML = '<tr><td colspan="' + (visCols.length||7) + '" style="padding:20px;text-align:center;color:#94A3B8">Sin tickets para este período / filtro</td></tr>';
+    return;
+  }
+
+  pageItems.forEach(function(t) {
+    var tr = document.createElement('tr');
+    tr.style.cssText = 'border-bottom:1px solid #F1F5F9;cursor:pointer';
+    tr.onmouseover = function(){ this.style.background='#EFF6FF'; };
+    tr.onmouseout  = function(){ this.style.background=''; };
+    (function(n){ tr.onclick = function(){ openDetail(n); }; })(t.n);
+    tr.innerHTML = visCols.map(function(c) {
+      return '<td style="padding:8px 12px;font-size:12px;color:#374151">' + (_rdCellValue(t, c.key)||'—') + '</td>';
+    }).join('');
+    tbody.appendChild(tr);
+  });
+}
+  renderCCTopTablas(tks);
+
+// === renderCCTopTablas ===
+function renderCCTopTablas(tks) {
+  // ── Top 20 Equipos ─────────────────────────────────────────────
+  var eqMap = {};
+  tks.forEach(function(t) {
+    if (!t.cod) return;
+    if (!eqMap[t.cod]) {
+      var pf = PF_DATA.find(function(e){ return e.cod === t.cod; });
+      eqMap[t.cod] = {
+        cod:  t.cod,
+        zon:  t.zon  || (pf ? pf.zon : '—'),
+        pro:  t.pro  || (pf ? pf.pro : '—'),
+        ref:  pf ? (pf.ref || '—') : '—',
+        blt:  0,
+        cli:  0,
+        total: 0
+      };
+    }
+    eqMap[t.cod].total++;
+    if (t.res === 'BLT')     eqMap[t.cod].blt++;
+    if (t.res === 'CLIENTE') eqMap[t.cod].cli++;
+  });
+
+  var topEq = Object.values(eqMap)
+    .sort(function(a,b){ return b.total - a.total; })
+    .slice(0, 20);
+
+  var tbodyEq = document.getElementById('cc-top-equipos-tbody');
+  if (tbodyEq) {
+    tbodyEq.innerHTML = '';
+    if (!topEq.length) {
+      tbodyEq.innerHTML = '<tr><td colspan="7" style="padding:16px;text-align:center;color:#94A3B8;font-size:12px">Sin datos</td></tr>';
+    } else {
+      topEq.forEach(function(e) {
+        var critico = isCritico(e.cod) ? '💥' : '';
+        var tr = document.createElement('tr');
+        tr.style.cssText = 'border-bottom:1px solid #F1F5F9';
+        tr.innerHTML =
+          '<td style="padding:8px 12px;font-size:12px">' + e.zon + '</td>' +
+          '<td style="padding:8px 12px;font-size:12px">' + e.pro + '</td>' +
+          '<td style="padding:8px 12px;font-size:12px">' + e.ref + '</td>' +
+          '<td style="padding:8px 12px;font-size:12px;text-align:center;font-weight:700;color:#0D2E6E">' + e.total + '</td>' +
+          '<td style="padding:8px 12px;font-size:12px;text-align:center">' + e.blt + '</td>' +
+          '<td style="padding:8px 12px;font-size:12px;text-align:center">' + e.cli + '</td>' +
+          '<td style="padding:8px 12px;font-size:12px;text-align:center">' + critico + '</td>';
+        tbodyEq.appendChild(tr);
+      });
+    }
+  }
+
+  // ── Top Proyectos ───────────────────────────────────────────────
+  var proMap = {};
+  tks.forEach(function(t) {
+    if (!t.pro) return;
+    if (!proMap[t.pro]) {
+      // Get zona from first ticket or portafolio
+      var pf = PF_DATA.find(function(e){ return e.pro === t.pro; });
+      proMap[t.pro] = {
+        pro:   t.pro,
+        zon:   t.zon || (pf ? pf.zon : '—'),
+        blt:   0,
+        cli:   0,
+        total: 0
+      };
+    }
+    proMap[t.pro].total++;
+    if (t.res === 'BLT')     proMap[t.pro].blt++;
+    if (t.res === 'CLIENTE') proMap[t.pro].cli++;
+  });
+
+  var topPro = Object.values(proMap)
+    .sort(function(a,b){ return b.total - a.total; })
+    .slice(0, 20);
+
+  var tbodyPro = document.getElementById('cc-top-proyectos-tbody');
+  if (tbodyPro) {
+    tbodyPro.innerHTML = '';
+    if (!topPro.length) {
+      tbodyPro.innerHTML = '<tr><td colspan="7" style="padding:16px;text-align:center;color:#94A3B8;font-size:12px">Sin datos</td></tr>';
+    } else {
+      topPro.forEach(function(p) {
+        // Equipos activos en el proyecto
+        var activos = PF_DATA.filter(function(e){
+          return e.pro === p.pro && !e.inactivo && e.estatus !== 'No en Servicio';
+        }).length;
+        // Equipos críticos en el proyecto
+        var criticos = PF_DATA.filter(function(e){
+          return e.pro === p.pro && isCritico(e.cod);
+        }).length;
+        var critStr = criticos > 0 ? '💥 (' + criticos + ')' : '';
+        var tr = document.createElement('tr');
+        tr.style.cssText = 'border-bottom:1px solid #F1F5F9';
+        tr.innerHTML =
+          '<td style="padding:8px 12px;font-size:12px">' + p.zon + '</td>' +
+          '<td style="padding:8px 12px;font-size:12px;font-weight:600">' + p.pro + '</td>' +
+          '<td style="padding:8px 12px;font-size:12px;text-align:center">' + activos + '</td>' +
+          '<td style="padding:8px 12px;font-size:12px;text-align:center;font-weight:700;color:#0D2E6E">' + p.total + '</td>' +
+          '<td style="padding:8px 12px;font-size:12px;text-align:center">' + p.blt + '</td>' +
+          '<td style="padding:8px 12px;font-size:12px;text-align:center">' + p.cli + '</td>' +
+          '<td style="padding:8px 12px;font-size:12px;text-align:center">' + critStr + '</td>';
+        tbodyPro.appendChild(tr);
+      });
+    }
+  }
+}
+
+// === renderCCTable ===
+var _ccPage = 0;
+var _ccPageSize = 30;
+var _ccFiltered = [];
+
+function renderCCTable() {
+  const tks = (window._ccTks || []).slice().sort(function(a,b){
+    // Más nuevo primero: ordenar por fecha de reporte descendente
+    if ((b.fr||'') > (a.fr||'')) return 1;
+    if ((b.fr||'') < (a.fr||'')) return -1;
+    return (b.n||'') > (a.n||'') ? 1 : -1;
+  });
+  const search = ((document.getElementById('cc-search')&&document.getElementById('cc-search').value)||'').toLowerCase();
+  const fEt    = (document.getElementById('cc-filter-et')&&document.getElementById('cc-filter-et').value)||'';
+
+  _ccFiltered = tks;
+  if (search) _ccFiltered = _ccFiltered.filter(t=>((t.n||'')+(t.pro||'')+(t.asu||'')+(t.zon||'')).toLowerCase().includes(search));
+  if (fEt)    _ccFiltered = _ccFiltered.filter(t=>t.et===fEt);
+
+  _ccPage = 0; // reset to first page on filter change
+  _renderCCPage();
+}
+
+function ccChangePage(dir) {
+  var totalPages = Math.ceil(_ccFiltered.length / _ccPageSize);
+  _ccPage = Math.max(0, Math.min(_ccPage + dir, totalPages - 1));
+  _renderCCPage();
+}
+
+function _renderCCPage() {
+  var totalPages = Math.max(1, Math.ceil(_ccFiltered.length / _ccPageSize));
+  var start = _ccPage * _ccPageSize;
+  var pageItems = _ccFiltered.slice(start, start + _ccPageSize);
+
+  var cnt = document.getElementById('cc-count');
+  if (cnt) cnt.textContent = _ccFiltered.length + ' tickets';
+
+  var info = document.getElementById('cc-page-info');
+  if (info) info.textContent = 'Página ' + (_ccPage+1) + ' de ' + totalPages + ' (' + _ccFiltered.length + ' tickets)';
+
+  var prev = document.getElementById('cc-page-prev');
+  var next = document.getElementById('cc-page-next');
+  if (prev) prev.disabled = _ccPage === 0;
+  if (next) next.disabled = _ccPage >= totalPages - 1;
+
+  var visCols = _CC_COLS.filter(function(c){ return c.visible; });
+
+  var thead = document.getElementById('cc-tbl-thead');
+  if (thead) {
+    thead.innerHTML = '<tr>' + visCols.map(function(c) {
+      return '<th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:rgba(255,255,255,.85)">' + c.label + '</th>';
+    }).join('') + '</tr>';
+  }
+
+  var tbody = document.getElementById('cc-tbl-body');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+
+  if (!pageItems.length) {
+    tbody.innerHTML = '<tr><td colspan="' + (visCols.length||7) + '" style="padding:20px;text-align:center;color:#94A3B8">Sin tickets para este período / filtro</td></tr>';
+    return;
+  }
+
+  pageItems.forEach(function(t) {
+    var tr = document.createElement('tr');
+    tr.style.cssText = 'border-bottom:1px solid #F1F5F9;cursor:pointer';
+    tr.onmouseover = function(){ this.style.background='#EFF6FF'; };
+    tr.onmouseout  = function(){ this.style.background=''; };
+    (function(n){ tr.onclick = function(){ openDetail(n); }; })(t.n);
+    tr.innerHTML = visCols.map(function(c) {
+      return '<td style="padding:8px 12px;font-size:12px;color:#374151">' + (_rdCellValue(t, c.key)||'—') + '</td>';
+    }).join('');
+    tbody.appendChild(tr);
+  });
+}
+<!-- ═══════════════════════════════════════════
+     MÓDULO: Equipos Críticos
+════════════════════════════════════════════ -->
+<!-- ═══════════════════════════════════════════
+     MÓDULO: Equipos Críticos
+════════════════════════════════════════════ -->
 <div id="panel-criticos" class="panel">
+
+  <!-- Filtros Equipos Críticos -->
   <div class="card db-filter" style="margin-bottom:16px;flex-wrap:wrap;gap:8px">
     <i class="ti ti-alert-triangle" style="color:#DC2626;font-size:15px"></i>
     <strong style="font-size:12px;color:#DC2626">Equipos Críticos</strong>
     <label style="font-size:10px;font-weight:600;color:#94A3B8;text-transform:uppercase">Fallas BLT mín.</label>
     <input type="number" id="crit-min-fallas" value="3" min="1" style="width:55px;height:30px;text-align:center;font-size:13px;font-weight:600;border:1px solid rgba(13,46,110,.3);border-radius:6px">
     <label style="font-size:10px;font-weight:600;color:#94A3B8;text-transform:uppercase">Días</label>
-    <input type="number" id="crit-dias" value="35" min="1" placeholder="ej. 35" style="width:65px;height:30px;text-align:center;font-size:13px;font-weight:600;border:1px solid rgba(13,46,110,.3);border-radius:6px">
-    <button class="btn btn-sm btn-primary" onclick="renderCriticos()" style="height:30px">Aplicar</button>
-    
+    <input type="number" id="crit-dias" value="35" min="1" style="width:65px;height:30px;text-align:center;font-size:13px;font-weight:600;border:1px solid rgba(13,46,110,.3);border-radius:6px">
+    <button class="btn btn-sm btn-primary" onclick="renderCriticos()" style="height:30px">&#128259; Aplicar</button>
     <button class="btn btn-sm" onclick="exportCriticosPDF()" style="height:30px;background:#FEF2F2;color:#DC2626;border-color:#FECACA">&#128196; PDF</button>
     <span id="crit-count" style="font-size:11px;color:#94A3B8;margin-left:auto"></span>
   </div>
-  <div class="card" style="padding:0;overflow:hidden;margin-top:12px">
+
+  <!-- Tabla Equipos Críticos -->
+  <div class="card" style="padding:0;overflow:hidden;margin-bottom:16px">
     <div style="overflow-x:auto">
-    <table style="width:100%;border-collapse:collapse;min-width:1400px">
-      <thead id="crit-thead" style="background:#DC2626"><tr>
-        <th style="padding:8px 10px;text-align:left;font-size:10px;font-weight:600;color:#fff;white-space:nowrap">Zona</th>
-        <th style="padding:8px 10px;text-align:left;font-size:10px;font-weight:600;color:#fff;white-space:nowrap">Proyecto</th>
-        <th style="padding:8px 10px;text-align:left;font-size:10px;font-weight:600;color:#fff;white-space:nowrap">Código</th>
-        <th style="padding:8px 10px;text-align:left;font-size:10px;font-weight:600;color:#fff;white-space:nowrap">Ref. en sitio</th>
-        <th style="padding:8px 10px;text-align:left;font-size:10px;font-weight:600;color:#fff;white-space:nowrap">Operativo</th>
-        <th style="padding:8px 6px;text-align:center;font-size:10px;font-weight:600;color:#fff;white-space:nowrap;width:60px">Calls año</th>
-        <th style="padding:8px 6px;text-align:center;font-size:10px;font-weight:600;color:#fff;white-space:nowrap;width:60px">Resp BLT</th>
-        <th style="padding:8px 6px;text-align:center;font-size:10px;font-weight:600;color:#fff;white-space:nowrap;width:60px">Último BLT</th>
-        <th style="padding:8px 6px;text-align:center;font-size:10px;font-weight:600;color:#fff;white-space:nowrap;width:60px">Resp Cliente</th>
-        <th style="padding:8px 6px;text-align:center;font-size:10px;font-weight:600;color:#fff;white-space:nowrap;width:60px">Último Cliente</th>
-        <th style="padding:8px 6px;text-align:center;font-size:10px;font-weight:600;color:#fff;white-space:nowrap;width:60px">Última Llamada</th>
-        <th style="padding:8px 6px;text-align:center;font-size:10px;font-weight:600;color:#fff;white-space:nowrap;width:60px">MTBC</th>
-        <th style="padding:8px 6px;text-align:center;font-size:10px;font-weight:600;color:#fff;white-space:nowrap;width:60px">Disponibilidad</th>
-        <th style="padding:8px 6px;width:60px"></th>
-      </tr></thead>
-      <tbody id="crit-tbody"></tbody>
-    </table>
+      <table style="width:100%;border-collapse:collapse;min-width:1200px">
+        <thead id="crit-thead" style="background:#DC2626">
+          <tr>
+            <th style="padding:8px 10px;text-align:left;font-size:10px;font-weight:600;color:#fff;white-space:nowrap">Zona</th>
+            <th style="padding:8px 10px;text-align:left;font-size:10px;font-weight:600;color:#fff;white-space:nowrap">Proyecto</th>
+            <th style="padding:8px 10px;text-align:left;font-size:10px;font-weight:600;color:#fff;white-space:nowrap">Código</th>
+            <th style="padding:8px 10px;text-align:left;font-size:10px;font-weight:600;color:#fff;white-space:nowrap">Ref. en sitio</th>
+            <th style="padding:8px 10px;text-align:left;font-size:10px;font-weight:600;color:#fff;white-space:nowrap">Estatus</th>
+            <th style="padding:8px 6px;text-align:center;font-size:10px;font-weight:600;color:#fff;white-space:nowrap">Calls año</th>
+            <th style="padding:8px 6px;text-align:center;font-size:10px;font-weight:600;color:#fff;white-space:nowrap">Fallas BLT</th>
+            <th style="padding:8px 6px;text-align:center;font-size:10px;font-weight:600;color:#fff;white-space:nowrap">Último BLT</th>
+            <th style="padding:8px 6px;text-align:center;font-size:10px;font-weight:600;color:#fff;white-space:nowrap">Resp. Cliente</th>
+            <th style="padding:8px 6px;text-align:center;font-size:10px;font-weight:600;color:#fff;white-space:nowrap">Último Cliente</th>
+            <th style="padding:8px 6px;text-align:center;font-size:10px;font-weight:600;color:#fff;white-space:nowrap">MTBC</th>
+            <th style="padding:8px 6px;width:50px"></th>
+          </tr>
+        </thead>
+        <tbody id="crit-tbody"></tbody>
+      </table>
     </div>
   </div>
+
+  <!-- Filtros Proyectos Críticos -->
+  <div class="card db-filter" style="margin-bottom:8px;flex-wrap:wrap;gap:8px">
+    <i class="ti ti-building" style="color:#DC2626;font-size:15px"></i>
+    <strong style="font-size:12px;color:#DC2626">Proyectos Críticos</strong>
+    <label style="font-size:10px;font-weight:600;color:#94A3B8;text-transform:uppercase">Fallas BLT mín.</label>
+    <input type="number" id="crit-pro-min-fallas" value="5" min="1" style="width:55px;height:30px;text-align:center;font-size:13px;font-weight:600;border:1px solid rgba(13,46,110,.3);border-radius:6px">
+    <label style="font-size:10px;font-weight:600;color:#94A3B8;text-transform:uppercase">Días</label>
+    <input type="number" id="crit-pro-dias" value="35" min="1" style="width:65px;height:30px;text-align:center;font-size:13px;font-weight:600;border:1px solid rgba(13,46,110,.3);border-radius:6px">
+    <button onclick="renderProyCriticos()" style="height:30px;padding:0 12px;border:1px solid #DC2626;border-radius:6px;background:#FEF2F2;color:#DC2626;font-size:12px;font-weight:600;cursor:pointer">&#128259; Actualizar</button>
+    <button onclick="exportProyCriticosPDF()" style="height:30px;padding:0 12px;border:1px solid #FECACA;border-radius:6px;background:#FEF2F2;color:#DC2626;font-size:12px;cursor:pointer">&#128196; PDF</button>
+    <span id="crit-pro-count" style="font-size:11px;color:#94A3B8;margin-left:auto"></span>
+  </div>
+
+  <!-- Tabla Proyectos Críticos -->
+  <div class="card" style="padding:0;overflow:hidden">
+    <div style="overflow-x:auto">
+      <table style="width:100%;border-collapse:collapse;min-width:600px">
+        <thead style="background:#DC2626">
+          <tr>
+            <th style="padding:8px 10px;text-align:left;font-size:10px;font-weight:600;color:#fff;white-space:nowrap">Zona</th>
+            <th style="padding:8px 10px;text-align:left;font-size:10px;font-weight:600;color:#fff;white-space:nowrap">Proyecto</th>
+            <th style="padding:8px 6px;text-align:center;font-size:10px;font-weight:600;color:#fff;white-space:nowrap">Equipos activos</th>
+            <th style="padding:8px 6px;text-align:center;font-size:10px;font-weight:600;color:#fff;white-space:nowrap">Fallas BLT</th>
+            <th style="padding:8px 6px;text-align:center;font-size:10px;font-weight:600;color:#fff;white-space:nowrap">Equipos críticos</th>
+          </tr>
+        </thead>
+        <tbody id="crit-pro-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
 </div>
 
 <div id="panel-portafolio" class="panel">
@@ -1514,7 +1941,242 @@ tbody tr:nth-child(even) td.pin{background:#F8FAFC}
 
 <div class="toast" id="toast"></div>
 
-<div id="notif-page" class="panel" style="display:none;padding:16px;max-width:1200px;margin:0 auto"><div style="margin-bottom:16px;display:flex;align-items:center;gap:12px"><h2 style="font-size:16px;font-weight:700;color:#0D2E6E">&#128276; Notificaciones y Mensajes</h2><span id="notif-count-lbl" style="font-size:12px;color:#94A3B8"></span></div><div style="background:#fff;border:1px solid #0D2E6E;border-radius:12px;overflow:hidden"><table style="width:100%;border-collapse:collapse"><thead style="background:#0D2E6E"><tr><th style="padding:9px 12px;font-size:11px;font-weight:600;color:rgba(255,255,255,.85)">Ticket</th><th style="padding:9px 12px;font-size:11px;font-weight:600;color:rgba(255,255,255,.85)">Asunto</th><th style="padding:9px 12px;font-size:11px;font-weight:600;color:rgba(255,255,255,.85)">Proyecto</th><th style="padding:9px 12px;font-size:11px;font-weight:600;color:rgba(255,255,255,.85)">Ultimo mensaje</th><th style="padding:9px 12px;font-size:11px;font-weight:600;color:rgba(255,255,255,.85)">Mensaje</th><th style="padding:9px 12px;font-size:11px;font-weight:600;color:rgba(255,255,255,.85)">Estado</th></tr></thead><tbody id="notif-tbody"></tbody></table></div></div>
+<!-- ═══════════════════════════════════════════
+     MÓDULO: Notificaciones y Mensajes
+════════════════════════════════════════════ -->
+<div id="notif-page" style="display:none;padding:16px;max-width:1200px;margin:0 auto;background:#F0F4F8">
+
+  <div style="margin-bottom:16px;display:flex;align-items:center;gap:12px">
+    <h2 style="font-size:16px;font-weight:700;color:#0D2E6E">&#128276; Notificaciones y Mensajes</h2>
+    <span id="notif-count-lbl" style="font-size:12px;color:#94A3B8"></span>
+  </div>
+
+  <!-- Mensajes no leidos -->
+  <div style="background:#fff;border:1px solid #0D2E6E;border-radius:12px;overflow:hidden;margin-bottom:16px">
+    <div style="padding:10px 16px;background:#0D2E6E;display:flex;align-items:center;gap:8px">
+      <span style="font-size:13px;font-weight:700;color:#fff">&#128172; Mensajes no leídos</span>
+      <span id="notif-msg-badge" style="background:#DC2626;color:#fff;border-radius:20px;padding:1px 8px;font-size:11px;font-weight:700;display:none">0</span>
+    </div>
+    <table style="width:100%;border-collapse:collapse">
+      <thead style="background:#EEF2FF"><tr>
+        <th style="padding:9px 12px;font-size:11px;font-weight:600;color:#0D2E6E;text-align:left">Ticket</th>
+        <th style="padding:9px 12px;font-size:11px;font-weight:600;color:#0D2E6E;text-align:left">Asunto</th>
+        <th style="padding:9px 12px;font-size:11px;font-weight:600;color:#0D2E6E;text-align:left">Proyecto</th>
+        <th style="padding:9px 12px;font-size:11px;font-weight:600;color:#0D2E6E;text-align:left">De</th>
+        <th style="padding:9px 12px;font-size:11px;font-weight:600;color:#0D2E6E;text-align:left">Último mensaje</th>
+        <th style="padding:9px 12px;font-size:11px;font-weight:600;color:#0D2E6E;text-align:left">Estado</th>
+      </tr></thead>
+      <tbody id="notif-msg-tbody"></tbody>
+    </table>
+  </div>
+
+  <!-- Nuevos equipos criticos -->
+  <div style="background:#fff;border:1px solid #DC2626;border-radius:12px;overflow:hidden">
+    <div style="padding:10px 16px;background:#DC2626;display:flex;align-items:center;gap:8px">
+      <span style="font-size:13px;font-weight:700;color:#fff">&#128165; Nuevos equipos críticos</span>
+      <span id="notif-crit-badge" style="background:#fff;color:#DC2626;border-radius:20px;padding:1px 8px;font-size:11px;font-weight:700;display:none">0</span>
+    </div>
+    <table style="width:100%;border-collapse:collapse">
+      <thead style="background:#FEF2F2"><tr>
+        <th style="padding:9px 12px;font-size:11px;font-weight:600;color:#DC2626;text-align:left">Equipo</th>
+        <th style="padding:9px 12px;font-size:11px;font-weight:600;color:#DC2626;text-align:left">Proyecto</th>
+        <th style="padding:9px 12px;font-size:11px;font-weight:600;color:#DC2626;text-align:left">Zona</th>
+        <th style="padding:9px 12px;font-size:11px;font-weight:600;color:#DC2626;text-align:center">Fallas</th>
+        <th style="padding:9px 12px;font-size:11px;font-weight:600;color:#DC2626;text-align:left">Último ticket</th>
+      </tr></thead>
+      <tbody id="notif-crit-tbody"></tbody>
+    </table>
+  </div>
+
+</div>
+<!-- ═══════════════════════════════════════════
+     MÓDULO: Detalle de Equipo + Proyecto
+════════════════════════════════════════════ -->
+<!-- ═══════════════════════════════════════════
+     MÓDULO: Detalle de Equipo + Detalle de Proyecto
+     Global - se abre desde cualquier sección
+════════════════════════════════════════════ -->
+
+<!-- ── PANEL: Detalle de Equipo ─────────────────────────────────────── -->
+<div id="eq-page" style="display:none;position:fixed;inset:0;background:#F0F4F8;z-index:260;flex-direction:column;overflow-y:auto;-webkit-overflow-scrolling:touch">
+
+  <!-- Header -->
+  <div style="background:#fff;border-bottom:2px solid #0D2E6E;padding:0 16px;height:52px;display:flex;align-items:center;gap:10px;flex-shrink:0;position:sticky;top:0;z-index:10">
+    <button onclick="closeEqPage()" style="height:32px;padding:0 12px;border:1px solid #E2E8F0;border-radius:6px;background:#F8FAFC;font-size:12px;cursor:pointer">&#8592; Volver</button>
+    <div style="flex:1;min-width:0">
+      <p id="eq-page-title" style="font-size:14px;font-weight:700;color:#0D2E6E;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></p>
+      <p id="eq-page-badge" style="font-size:11px;color:#94A3B8"></p>
+    </div>
+    <button id="eq-proy-btn" onclick="openProyPage(this.getAttribute('data-pro'))" style="display:none;height:32px;padding:0 12px;border:1px solid #0D2E6E;border-radius:6px;background:#EEF2FF;color:#0D2E6E;font-size:12px;font-weight:600;cursor:pointer">&#127970; Ver proyecto</button>
+  </div>
+
+  <div style="padding:16px;max-width:1200px;margin:0 auto;width:100%">
+
+    <!-- Alerta estatus -->
+    <div id="eq-estatus-alert" style="display:none;align-items:center;gap:12px;padding:12px 16px;border-radius:10px;border:1px solid;margin-bottom:16px"></div>
+
+    <!-- Datos generales -->
+    <div class="card" style="padding:16px;border-radius:12px;margin-bottom:16px">
+      <p style="font-size:11px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:.04em;margin-bottom:10px">Datos del equipo</p>
+      <div id="eq-info-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px"></div>
+    </div>
+
+    <!-- KPIs -->
+    <div id="eq-kpi-row" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px"></div>
+
+    <!-- Días sin falla -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+      <div class="card db-kpi" style="background:linear-gradient(135deg,#DC2626,#991B1B);padding:14px;border-radius:12px;text-align:center">
+        <div id="eq-dias-ult-blt" style="font-size:28px;font-weight:800;color:#fff;line-height:1">—</div>
+        <div style="font-size:10px;font-weight:600;color:rgba(255,255,255,.85);text-transform:uppercase;margin-top:4px">Días desde últ. falla BLT</div>
+      </div>
+      <div class="card db-kpi" style="background:linear-gradient(135deg,#D97706,#B45309);padding:14px;border-radius:12px;text-align:center">
+        <div id="eq-dias-ult-cli" style="font-size:28px;font-weight:800;color:#fff;line-height:1">—</div>
+        <div style="font-size:10px;font-weight:600;color:rgba(255,255,255,.85);text-transform:uppercase;margin-top:4px">Días desde últ. falla Cliente</div>
+      </div>
+    </div>
+
+    <!-- Dona responsabilidad + barras por mes -->
+    <div style="display:grid;grid-template-columns:200px 1fr;gap:12px;margin-bottom:16px">
+      <div class="card" style="padding:16px;border-radius:12px;display:flex;flex-direction:column;align-items:center">
+        <p style="font-size:11px;font-weight:700;color:#94A3B8;text-transform:uppercase;margin-bottom:8px">Responsabilidad</p>
+        <svg id="eq-svg-resp" width="140" height="140" viewBox="0 0 130 130" style="display:block;margin:0 auto"></svg>
+        <div id="eq-leg-resp" style="display:flex;flex-direction:column;gap:4px;margin-top:8px;width:100%"></div>
+      </div>
+      <div class="card" style="padding:16px;border-radius:12px">
+        <p style="font-size:11px;font-weight:700;color:#94A3B8;text-transform:uppercase;margin-bottom:8px">Fallas por mes</p>
+        <div id="eq-bars-mes-year" style="margin-bottom:8px"></div>
+        <div id="eq-bars-mes-prev" style="margin-bottom:8px"></div>
+      </div>
+    </div>
+
+    <!-- Historial de tickets -->
+    <div class="card" style="padding:16px;border-radius:12px;margin-bottom:16px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap">
+        <p style="font-size:13px;font-weight:700;color:#0D2E6E">Historial de tickets</p>
+        <select id="eq-hist-year" onchange="renderEqHistorial()" style="height:28px;font-size:12px;border:1px solid #E2E8F0;border-radius:6px;padding:0 8px"></select>
+        <span id="eq-hist-count" style="font-size:11px;color:#94A3B8;margin-left:auto"></span>
+      </div>
+      <div style="overflow-x:auto">
+        <table style="width:100%;border-collapse:collapse;min-width:900px">
+          <thead style="background:#0D2E6E" id="eq-hist-thead">
+            <tr>
+              <th style="padding:8px 10px;font-size:11px;font-weight:600;color:rgba(255,255,255,.85);text-align:left">Ticket</th>
+              <th style="padding:8px 10px;font-size:11px;font-weight:600;color:rgba(255,255,255,.85);text-align:left">Estado</th>
+              <th style="padding:8px 10px;font-size:11px;font-weight:600;color:rgba(255,255,255,.85);text-align:left">Asunto</th>
+              <th style="padding:8px 10px;font-size:11px;font-weight:600;color:rgba(255,255,255,.85);text-align:left">F. Reporte</th>
+              <th style="padding:8px 10px;font-size:11px;font-weight:600;color:rgba(255,255,255,.85);text-align:left">F. Solución</th>
+              <th style="padding:8px 10px;font-size:11px;font-weight:600;color:rgba(255,255,255,.85);text-align:left">Causa</th>
+              <th style="padding:8px 10px;font-size:11px;font-weight:600;color:rgba(255,255,255,.85);text-align:left">Resp.</th>
+              <th style="padding:8px 10px;font-size:11px;font-weight:600;color:rgba(255,255,255,.85);text-align:left">T. Llegada</th>
+              <th style="padding:8px 10px;font-size:11px;font-weight:600;color:rgba(255,255,255,.85);text-align:left">T. Solución</th>
+            </tr>
+          </thead>
+          <tbody id="eq-hist-tbody"></tbody>
+        </table>
+      </div>
+      <!-- Paginación historial -->
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 4px;margin-top:8px">
+        <button id="eq-hist-prev" onclick="eqHistChangePage(-1)" style="height:28px;padding:0 12px;border:1px solid #CBD5E1;border-radius:6px;background:#fff;font-size:12px;cursor:pointer">&#8592; Anterior</button>
+        <span id="eq-hist-page-info" style="font-size:12px;color:#64748B"></span>
+        <button id="eq-hist-next" onclick="eqHistChangePage(1)" style="height:28px;padding:0 12px;border:1px solid #CBD5E1;border-radius:6px;background:#fff;font-size:12px;cursor:pointer">Siguiente &#8594;</button>
+      </div>
+    </div>
+
+    <!-- Servicios preventivos por año -->
+    <div class="card" style="padding:16px;border-radius:12px;margin-bottom:32px">
+      <p style="font-size:13px;font-weight:700;color:#0D2E6E;margin-bottom:12px">Servicios preventivos</p>
+      <div id="eq-serv-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── PANEL: Detalle de Proyecto ────────────────────────────────────── -->
+<div id="proy-page" style="display:none;position:fixed;inset:0;background:#F0F4F8;z-index:270;flex-direction:column;overflow-y:auto;-webkit-overflow-scrolling:touch">
+
+  <!-- Header -->
+  <div style="background:#fff;border-bottom:2px solid #0D2E6E;padding:0 16px;height:52px;display:flex;align-items:center;gap:10px;flex-shrink:0;position:sticky;top:0;z-index:10">
+    <button onclick="closeProyPage()" style="height:32px;padding:0 12px;border:1px solid #E2E8F0;border-radius:6px;background:#F8FAFC;font-size:12px;cursor:pointer">&#8592; Volver</button>
+    <div style="flex:1;min-width:0">
+      <p id="proy-page-title" style="font-size:14px;font-weight:700;color:#0D2E6E;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></p>
+      <p id="proy-page-badge" style="font-size:11px;color:#94A3B8"></p>
+    </div>
+  </div>
+
+  <div style="padding:16px;max-width:1200px;margin:0 auto;width:100%">
+
+    <!-- Datos generales del proyecto -->
+    <div class="card" style="padding:16px;border-radius:12px;margin-bottom:16px">
+      <p style="font-size:11px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:.04em;margin-bottom:10px">Datos del proyecto</p>
+      <div id="proy-info-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px"></div>
+    </div>
+
+    <!-- KPIs sumatorio -->
+    <div id="proy-kpi-row" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px"></div>
+
+    <!-- Tabla de equipos del proyecto -->
+    <div class="card" style="padding:16px;border-radius:12px;margin-bottom:16px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+        <p style="font-size:13px;font-weight:700;color:#0D2E6E">Equipos del proyecto</p>
+        <span id="proy-eq-count" style="font-size:11px;color:#94A3B8;margin-left:auto"></span>
+      </div>
+      <div style="overflow-x:auto">
+        <table style="width:100%;border-collapse:collapse;min-width:700px">
+          <thead style="background:#0D2E6E">
+            <tr>
+              <th style="padding:8px 10px;font-size:11px;font-weight:600;color:rgba(255,255,255,.85);text-align:left">Código</th>
+              <th style="padding:8px 10px;font-size:11px;font-weight:600;color:rgba(255,255,255,.85);text-align:left">Ref. en sitio</th>
+              <th style="padding:8px 10px;font-size:11px;font-weight:600;color:rgba(255,255,255,.85);text-align:left">Tipo</th>
+              <th style="padding:8px 10px;font-size:11px;font-weight:600;color:rgba(255,255,255,.85);text-align:left">Zona</th>
+              <th style="padding:8px 10px;font-size:11px;font-weight:600;color:rgba(255,255,255,.85);text-align:center">Tickets</th>
+              <th style="padding:8px 10px;font-size:11px;font-weight:600;color:rgba(255,255,255,.85);text-align:center">Fallas BLT</th>
+              <th style="padding:8px 10px;font-size:11px;font-weight:600;color:rgba(255,255,255,.85);text-align:center">Crítico</th>
+              <th style="padding:8px 10px;font-size:11px;font-weight:600;color:rgba(255,255,255,.85);text-align:left">Estatus</th>
+            </tr>
+          </thead>
+          <tbody id="proy-eq-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Historial de tickets del proyecto -->
+    <div class="card" style="padding:16px;border-radius:12px;margin-bottom:32px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap">
+        <p style="font-size:13px;font-weight:700;color:#0D2E6E">Historial de tickets</p>
+        <select id="proy-hist-year" onchange="renderProyHistorial()" style="height:28px;font-size:12px;border:1px solid #E2E8F0;border-radius:6px;padding:0 8px"></select>
+        <span id="proy-hist-count" style="font-size:11px;color:#94A3B8;margin-left:auto"></span>
+      </div>
+      <div style="overflow-x:auto">
+        <table style="width:100%;border-collapse:collapse;min-width:900px">
+          <thead style="background:#0D2E6E">
+            <tr>
+              <th style="padding:8px 10px;font-size:11px;font-weight:600;color:rgba(255,255,255,.85);text-align:left">Ticket</th>
+              <th style="padding:8px 10px;font-size:11px;font-weight:600;color:rgba(255,255,255,.85);text-align:left">Equipo</th>
+              <th style="padding:8px 10px;font-size:11px;font-weight:600;color:rgba(255,255,255,.85);text-align:left">Estado</th>
+              <th style="padding:8px 10px;font-size:11px;font-weight:600;color:rgba(255,255,255,.85);text-align:left">Asunto</th>
+              <th style="padding:8px 10px;font-size:11px;font-weight:600;color:rgba(255,255,255,.85);text-align:left">F. Reporte</th>
+              <th style="padding:8px 10px;font-size:11px;font-weight:600;color:rgba(255,255,255,.85);text-align:left">F. Solución</th>
+              <th style="padding:8px 10px;font-size:11px;font-weight:600;color:rgba(255,255,255,.85);text-align:left">Resp.</th>
+              <th style="padding:8px 10px;font-size:11px;font-weight:600;color:rgba(255,255,255,.85);text-align:left">T. Llegada</th>
+              <th style="padding:8px 10px;font-size:11px;font-weight:600;color:rgba(255,255,255,.85);text-align:left">T. Solución</th>
+            </tr>
+          </thead>
+          <tbody id="proy-hist-tbody"></tbody>
+        </table>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 4px;margin-top:8px">
+        <button id="proy-hist-prev" onclick="proyHistChangePage(-1)" style="height:28px;padding:0 12px;border:1px solid #CBD5E1;border-radius:6px;background:#fff;font-size:12px;cursor:pointer">&#8592; Anterior</button>
+        <span id="proy-hist-page-info" style="font-size:12px;color:#64748B"></span>
+        <button id="proy-hist-next" onclick="proyHistChangePage(1)" style="height:28px;padding:0 12px;border:1px solid #CBD5E1;border-radius:6px;background:#fff;font-size:12px;cursor:pointer">Siguiente &#8594;</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+
 <div id="movimientos-page" class="panel" style="display:none;padding:16px;max-width:1200px;margin:0 auto"><div style="margin-bottom:16px"><h2 style="font-size:16px;font-weight:700;color:#0D2E6E">&#8644; Movimientos de Portafolio</h2></div><div style="background:#fff;border:1px solid #0D2E6E;border-radius:12px;overflow:hidden"><table style="width:100%;border-collapse:collapse"><thead style="background:#0D2E6E"><tr><th style="padding:9px 12px;font-size:11px;font-weight:600;color:rgba(255,255,255,.85)">Codigo</th><th style="padding:9px 12px;font-size:11px;font-weight:600;color:rgba(255,255,255,.85)">Proyecto</th><th style="padding:9px 12px;font-size:11px;font-weight:600;color:rgba(255,255,255,.85)">Zona</th><th style="padding:9px 12px;font-size:11px;font-weight:600;color:rgba(255,255,255,.85)">Estatus anterior</th><th style="padding:9px 12px;font-size:11px;font-weight:600;color:rgba(255,255,255,.85)">Estatus actual</th></tr></thead><tbody id="mov-page-tbody"></tbody></table></div></div>
 <!-- ═══════════════ SCRIPT ════════════════════════════════ -->
 <script>
@@ -1708,7 +2370,6 @@ function initResumen() {
   }
   renderResumen();
 }
-
 function changeDay(dir) {
   if (!ALL_DATES.length) ALL_DATES = [...new Set(ALL_TICKETS.map(t=>t.fr).filter(Boolean))].sort().reverse();
   const newIdx = currentDayIdx + dir;
@@ -1716,8 +2377,6 @@ function changeDay(dir) {
   currentDayIdx = newIdx;
   renderResumen();
 }
-
-// Close all rd-detail sections
 function closeAllRdDetails() {
   ['atrap','agua','voltaje','criticos','sla','nofunc'].forEach(k=>{
     const el = document.getElementById('rd-detail-'+k);
@@ -1944,27 +2603,6 @@ function renderResumen() {
   renderDayTable();
   setTimeout(initAllTables, 100);
 }
-
-
-let ALL_TICKETS = [];
-
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwSHONdV9oWSGCSD03-oA17SPzc2WSZVkPVrs1TkL__6qzyPBR51C-K3VZYffR6h68Dxw/exec';
-
-const SUPABASE_URL = 'https://qulldafyewynmwdxkjsf.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_B5tpfugNTnOsHymgxWCrWw_H8Yv9V1e';
-
-
-const ATRAP_KW = ['atrapado','atrapada','atrapados','atrapadas','gente atrapada',
-  'personas atrapadas','usuario atrapado','detenido con personas','rescate de','personas dentro'];
-const AGUA_KW  = ['filtraci','agua en fosa','agua en cubo','techo de cabina',
-  'inundaci','charco','humedad','fuga de agua','escurrimiento','mojado','filtracion'];
-window._VOLTAJE_KW = ['voltaje','variacion de voltaje','variación de voltaje',
-  'sobre voltaje','bajo voltaje','pico de voltaje','falla electrica','falla eléctrica',
-  'corte de luz','falla de energia','falla de energía','sin energia','sin energía',
-  'apagon','apagón'];
-let API_LOADING = false;
-
-// ── JSONP loader for mobile CORS workaround ─────────────────────
 function loadViaJsonp(url, cbName) {
   return new Promise((resolve, reject) => {
     const timeout = setTimeout(() => {
@@ -2291,8 +2929,19 @@ function showTab(tab, skipReset) {
   });
   ['notif-page','movimientos-page'].forEach(function(pid){
     var el=document.getElementById(pid),btn=document.getElementById('tab-'+pid.replace('-page',''));
-    if(el) el.style.display=(tab===pid.replace('-page',''))?'block':'none';
-    if(btn) btn.classList.toggle('on',tab===pid.replace('-page',''));
+    var isActive=(tab===pid.replace('-page',''));
+    if(el){
+      el.style.display=isActive?'block':'none';
+      el.style.position=isActive?'fixed':'';
+      el.style.top=isActive?'116px':'';
+      el.style.left=isActive?'0':'';
+      el.style.right=isActive?'0':'';
+      el.style.bottom=isActive?'0':'';
+      el.style.overflowY=isActive?'auto':'';
+      el.style.zIndex=isActive?'10':'';
+      el.style.background=isActive?'#F0F4F8':'';
+    }
+    if(btn) btn.classList.toggle('on',isActive);
   });
   if (tab==='users')      { renderUsers(); setTimeout(initAllTables,100); }
   if (tab==='resumen')    initResumen();
@@ -2307,6 +2956,8 @@ function showTab(tab, skipReset) {
   if (tab==='operativo')  initCumplimiento();
   if (tab==='proyectos')  initProyectos();
   if (tab==='criticos')   renderCriticos();
+  if (tab==='notif')      renderNotifPage();
+  if (tab==='movimientos') renderMovimientosPage();
 }
 
 // ── ROLES / FILTERS ───────────────────────────────────────────────────
@@ -3049,131 +3700,8 @@ function navPop() {
   window._NAV_RESTORING = false;
 }
 
-function initCriticos() {
-  renderCriticos();
-}
+function initCriticos() { renderCriticos(); renderProyCriticos(); }
 
-function renderCriticos() {
-  window._critRows = [];
-  var dias   = parseInt(document.getElementById('crit-dias') ? document.getElementById('crit-dias').value : 35) || 35;
-  if (dias < 1) dias = 1;
-  var minFal = parseInt(document.getElementById('crit-min-fallas') ? document.getElementById('crit-min-fallas').value : 3) || 3;
-  var tbody  = document.getElementById('crit-tbody');
-  var cnt    = document.getElementById('crit-count');
-  if (!tbody) return;
-
-  var cutoff = new Date();
-  cutoff.setDate(cutoff.getDate() - dias);
-  var cutStr = cutoff.toISOString().slice(0,10);
-
-  // Group tickets by equipo
-  var byEq = {};
-  ALL_TICKETS.forEach(function(t) {
-    if (!t.cod || !t.fr || t.fr < cutStr) return;
-    if (!byEq[t.cod]) byEq[t.cod] = [];
-    byEq[t.cod].push(t);
-  });
-
-  // Filter: BLT fallas >= minFal
-  var criticos = [];
-  Object.keys(byEq).forEach(function(cod) {
-    var tks  = byEq[cod];
-    var bltN = tks.filter(function(t){ return t.res === 'BLT'; }).length;
-    if (bltN < minFal) return;
-    var eq   = PF_DATA.filter(function(e){ return e.cod === cod; })[0];
-    var mtbc = calcMTBC(tks);
-    // Extra computed fields
-    var _yb = (typeof _yearBounds==='function')?_yearBounds():{curYearStart:new Date(new Date().getFullYear(),0,1).toISOString().slice(0,10),prevYearStart:new Date(new Date().getFullYear()-1,0,1).toISOString().slice(0,10),prevYearEnd:new Date(new Date().getFullYear()-1,11,31).toISOString().slice(0,10)};
-    var _callY = tks.filter(function(t){return t.fr&&t.fr>=_yb.curYearStart;}).length;
-    var _callP = tks.filter(function(t){return t.fr&&t.fr>=_yb.prevYearStart&&t.fr<=_yb.prevYearEnd;}).length;
-    var _bltS  = tks.filter(function(t){return t.res==='BLT'&&t.fr;}).sort(function(a,b){return b.fr.localeCompare(a.fr);});
-    var _cliS  = tks.filter(function(t){return t.res==='CLIENTE'&&t.fr;}).sort(function(a,b){return b.fr.localeCompare(a.fr);});
-    var _dBlt  = _bltS.length?(typeof _daysSince==='function'?_daysSince(_bltS[0].fr):null):null;
-    var _dCli  = _cliS.length?(typeof _daysSince==='function'?_daysSince(_cliS[0].fr):null):null;
-    var _c365  = (function(){var d=new Date();d.setDate(d.getDate()-365);return d.toISOString().slice(0,10);})();
-    var _t365  = tks.filter(function(t){return t.res==='BLT'&&t.fr&&t.fr>=_c365;});
-    var _opM   = (typeof _buildOperativoStatus==='function')?_buildOperativoStatus():{};
-    var _oper  = _opM[cod]?_opM[cod].status:'Funcionando';
-    criticos.push({
-      cod:  cod,
-      pro:  eq ? eq.pro  : (tks[0] ? tks[0].pro : '—'),
-      zon:  eq ? eq.zon  : '—',
-      ref:  eq ? (eq.ref||'—') : '—',
-      cli:  tks.filter(function(t){return t.res==='CLIENTE'&&t.fr&&t.fr>=_yb.curYearStart;}).length,
-      tipo:     eq?(eq.tipo||'—'):'—',
-      contrato: eq?(eq.contrato||'—'):'—',
-      oper:     _oper,
-      bltN:     bltN,
-      blt:      bltN,
-      total:    tks.length,
-      callyear: _callY,
-      callprev: _callP,
-      diasblt:  _dBlt,
-      diascli:  _dCli,
-      last:     tks.map(function(t){return t.fr||'';}).sort().reverse()[0] || '—',
-      mtbc:     mtbc,
-    });
-  });
-
-  criticos.sort(function(a,b){ return b.bltN - a.bltN; });
-  window._critRows = criticos;
-  window._critFilters = {dias:dias, minFal:minFal};
-  // Build fast lookup set for criticos indicator
-  window._critSet = new Set(criticos.map(function(c){ return c.cod; }));
-
-  if (cnt) cnt.textContent = criticos.length + ' equipo' + (criticos.length!==1?'s':'');
-
-  if (!criticos.length) {
-    tbody.innerHTML = '<tr><td colspan="8" style="padding:20px;text-align:center;color:#94A3B8;font-size:12px">Sin equipos críticos en el período</td></tr>';
-    return;
-  }
-
-  var rows = document.createElement('tbody');
-  criticos.forEach(function(eq) {
-    var tr = document.createElement('tr');
-    tr.style.borderBottom = '1px solid rgba(13,46,110,.1)';
-    tr.style.cursor = 'pointer';
-    tr.onmouseover = function(){ this.style.background='#FFF5F5'; };
-    tr.onmouseout  = function(){ this.style.background=''; };
-    (function(cod){ tr.onclick = function(){ toggleCritDetail(cod, tr); }; })(eq.cod);
-    tr.innerHTML =
-                  '<td style="padding:8px 10px;font-size:12px;color:#64748B">' + (eq.zon||'—') + '</td>' +
-      '<td style="padding:8px 10px;font-size:12px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + (eq.pro||'—') + '</td>' +
-      '<td style="padding:8px 10px;font-size:12px;font-weight:700;color:#1B4FD8;white-space:nowrap;cursor:pointer">🚨 ' + eq.cod + '</td>' +
-      '<td style="padding:8px 10px;font-size:12px;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + (eq.ref||'—') + '</td>' +
-      '<td style="padding:8px 10px;font-size:12px;font-weight:600;color:' + (eq.oper==='Funcionando'?'#16A34A':'#DC2626') + '">' + (eq.oper||'—') + '</td>' +
-      '<td style="padding:8px 6px;text-align:center;font-size:12px">' + (eq.callyear!==undefined?eq.callyear:'—') + '</td>' +
-      '<td style="padding:8px 6px;text-align:center;font-size:12px"><span style="background:#FEF2F2;color:#DC2626;border-radius:12px;padding:2px 8px;font-weight:700">' + (eq.blt||eq.bltN||0) + '</span></td>' +
-      '<td style="padding:8px 6px;text-align:center;font-size:12px;color:' + ((eq.diasblt!==null&&eq.diasblt!==undefined&&eq.diasblt<=7)?'#DC2626':'#374151') + '">' + (eq.diasblt!==null&&eq.diasblt!==undefined?eq.diasblt+' d':'—') + '</td>' +
-      '<td style="padding:8px 6px;text-align:center;font-size:12px;color:#D97706;font-weight:600">' + (eq.cli!==undefined?eq.cli:'—') + '</td>' +
-      '<td style="padding:8px 6px;text-align:center;font-size:12px;color:#94A3B8">' + (eq.diascli!==null&&eq.diascli!==undefined?eq.diascli+' d':'—') + '</td>' +
-      '<td style="padding:8px 6px;text-align:center;font-size:12px;color:#64748B">' + (eq.last||'—') + '</td>' +
-      '<td style="padding:8px 6px;text-align:center;font-size:12px;font-weight:600;color:#0D2E6E">' + (eq.mtbc!==null?Math.round(eq.mtbc)+' d':'—') + '</td>' +
-      '<td style="padding:8px 6px;text-align:center;font-size:12px;font-weight:600;color:' + (eq.disp>=99?'#16A34A':eq.disp>=95?'#D97706':'#DC2626') + '">' + (eq.disp!==undefined&&eq.disp!==null?(typeof eq.disp==='number'?eq.disp.toFixed(1):eq.disp)+'%':'—') + '</td>' +
-      '<td style="padding:8px 6px"><button class="btn btn-sm btn-primary" onclick="event.stopPropagation();openEqPage(\'' + eq.cod + '\')" style="font-size:11px;padding:3px 8px">Ver</button></td>';
-    rows.appendChild(tr);
-  });
-  tbody.innerHTML = '';
-  while(rows.firstChild) tbody.appendChild(rows.firstChild);
-  applyCritCols();
-}
-
-// ── Equipos Críticos column toggle ────────────────────────────────────
-var _CRIT_COLS = {
-  zon:      {label:'Zona',          visible:true},
-  pro:      {label:'Proyecto',      visible:true},
-  cod:      {label:'Código',        visible:true},
-  ref:      {label:'Ref. en sitio', visible:true},
-  oper:     {label:'Operativo',     visible:true},
-  callyear: {label:'Calls año',     visible:true},
-  blt:      {label:'Resp BLT',      visible:true},
-  diasblt:  {label:'Último BLT',   visible:true},
-  cli:      {label:'Resp Cliente',  visible:true},
-  diascli:  {label:'Último Cliente',visible:true},
-  last:     {label:'Última Llamada',visible:true},
-  mtbc:     {label:'MTBC',          visible:true},
-  ver:      {label:'',              visible:true},
-};
 
 function toggleCritCols() {
   var panel = document.getElementById('crit-col-panel');
@@ -3678,6 +4206,7 @@ function goToDate(dateStr) {
 function isCritico(cod) {
   return window._critSet && window._critSet.has && window._critSet.has(cod);
 }
+
 function critBadge(cod) {
   return isCritico(cod) ? '💥 ' : '';
 }
@@ -3700,25 +4229,77 @@ function _buildCritSet(dias, minFal) {
 }
 
 function renderNotifPage(){
-  var tbody=document.getElementById('notif-tbody'),lbl=document.getElementById('notif-count-lbl'),badge=document.getElementById('notif-nav-badge');
-  if(!tbody)return;tbody.innerHTML='';
-  var unread=Object.keys(MENSAJES||{}).filter(function(n){return MENSAJES[n]&&MENSAJES[n].unread;});
-  if(lbl)lbl.textContent=unread.length?unread.length+' no leidos':'Sin mensajes no leidos';
-  if(badge){badge.textContent=unread.length;badge.style.display=unread.length>0?'flex':'none';}
-  if(!unread.length){tbody.innerHTML='<tr><td colspan="6" style="padding:32px;text-align:center;color:#94A3B8">Sin mensajes no leidos</td></tr>';return;}
-  unread.forEach(function(n){
-    var m=MENSAJES[n],t=ALL_TICKETS.find(function(tk){return tk.n===n;});
-    var tr=document.createElement('tr');tr.style.cssText='border-bottom:1px solid #F1F5F9;cursor:pointer';
-    (function(id){tr.onclick=function(){openDetail(id);};})(n);
-    tr.innerHTML='<td style="padding:9px 12px;font-weight:600;color:#1B4FD8">'+n+'</td>'
-      +'<td style="padding:9px 12px;font-size:12px">'+(t?t.asu:'')+'</td>'
-      +'<td style="padding:9px 12px;font-size:12px">'+(t?t.pro:'')+'</td>'
-      +'<td style="padding:9px 12px;font-size:12px">'+(m.from||'')+'</td>'
-      +'<td style="padding:9px 12px;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px">'+(m.lastMsg||'')+'</td>'
-      +'<td style="padding:9px 12px">'+(t?etBdg(t.et):'')+'</td>';
-    tbody.appendChild(tr);
+  var msgTbody  = document.getElementById('notif-msg-tbody');
+  var critTbody = document.getElementById('notif-crit-tbody');
+  var msgBadge  = document.getElementById('notif-msg-badge');
+  var critBadge = document.getElementById('notif-crit-badge');
+  var lbl       = document.getElementById('notif-count-lbl');
+  if (!msgTbody) return;
+
+  msgTbody.innerHTML = '';
+  var unread = Object.keys(UNREAD||{}).filter(function(n){ return (UNREAD[n]||0)>0; });
+  if (msgBadge){ msgBadge.textContent=unread.length; msgBadge.style.display=unread.length?'inline-block':'none'; }
+  if (!unread.length){
+    msgTbody.innerHTML='<tr><td colspan="6" style="padding:20px;text-align:center;color:#94A3B8;font-size:12px">Sin mensajes no leídos</td></tr>';
+  } else {
+    unread.forEach(function(n){
+      var t=ALL_TICKETS.find(function(tk){return tk.n===n;});
+      var msgs=(CHATS[n]||[]).filter(function(msg){return msg.u!==CURRENT_USER&&!msg.leido;});
+      var last=msgs[msgs.length-1]||{};
+      var tr=document.createElement('tr');
+      tr.style.cssText='border-bottom:1px solid #F1F5F9;cursor:pointer';
+      tr.onmouseover=function(){this.style.background='#EFF6FF';};
+      tr.onmouseout=function(){this.style.background='';};
+      (function(id){tr.onclick=function(){openDetail(id);};})(n);
+      tr.innerHTML='<td style="padding:9px 12px;font-weight:700;color:#1B4FD8;font-size:12px">'+n+'</td>'+
+        '<td style="padding:9px 12px;font-size:12px">'+(t?t.asu:'—')+'</td>'+
+        '<td style="padding:9px 12px;font-size:12px">'+(t?t.pro:'—')+'</td>'+
+        '<td style="padding:9px 12px;font-size:12px">'+(last.u||'—')+'</td>'+
+        '<td style="padding:9px 12px;font-size:12px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(last.m||'—')+'</td>'+
+        '<td style="padding:9px 12px">'+(t?etBdg(t.et):'—')+'</td>';
+      msgTbody.appendChild(tr);
+    });
+  }
+
+  if (!critTbody) return;
+  critTbody.innerHTML='';
+  var cutoff=new Date(); cutoff.setDate(cutoff.getDate()-30);
+  var cutStr=cutoff.toISOString().slice(0,10);
+  var critEqs=[];
+  (_critSet||new Set()).forEach(function(cod){
+    var tks=ALL_TICKETS.filter(function(t){return t.cod===cod;});
+    var recent=tks.filter(function(t){return t.et==='Cerrado'&&t.fs&&t.fs>=cutStr;});
+    if(recent.length){
+      var eq=PF_DATA.find(function(e){return e.cod===cod;});
+      var last=recent.sort(function(a,b){return b.fs>a.fs?1:-1;})[0];
+      critEqs.push({cod:cod,pro:eq?eq.pro:'—',zon:eq?eq.zon:'—',fallas:tks.length,lastTk:last.n});
+    }
+  });
+  if(critBadge){critBadge.textContent=critEqs.length;critBadge.style.display=critEqs.length?'inline-block':'none';}
+  if(lbl) lbl.textContent=(unread.length+critEqs.length)?(unread.length+critEqs.length)+' notificaciones':'Sin notificaciones';
+  if(!critEqs.length){
+    critTbody.innerHTML='<tr><td colspan="5" style="padding:20px;text-align:center;color:#94A3B8;font-size:12px">Sin nuevos equipos críticos este mes</td></tr>';
+    return;
+  }
+  critEqs.forEach(function(e){
+    var tr=document.createElement('tr');
+    tr.style.cssText='border-bottom:1px solid #FEF2F2;cursor:pointer';
+    tr.onmouseover=function(){this.style.background='#FEF2F2';};
+    tr.onmouseout=function(){this.style.background='';};
+    (function(cod){tr.onclick=function(){openEqPage(cod);};})(e.cod);
+    var tdCod=document.createElement('td'); tdCod.style.cssText='padding:9px 12px;font-weight:700;color:#DC2626;font-size:12px;cursor:pointer';
+    tdCod.textContent='💥 '+e.cod; tdCod.onclick=function(ev){ev.stopPropagation();openEqPage(e.cod);};
+    var tdPro=document.createElement('td'); tdPro.style.cssText='padding:9px 12px;font-size:12px;color:#1B4FD8;cursor:pointer';
+    tdPro.textContent=e.pro; tdPro.onclick=function(ev){ev.stopPropagation();openProyPage(e.pro);};
+    var tdZon=document.createElement('td'); tdZon.style.cssText='padding:9px 12px;font-size:12px'; tdZon.textContent=e.zon;
+    var tdFal=document.createElement('td'); tdFal.style.cssText='padding:9px 12px;font-size:12px;text-align:center'; tdFal.textContent=e.fallas;
+    var tdTk=document.createElement('td'); tdTk.style.cssText='padding:9px 12px;font-size:12px;font-weight:600;color:#1B4FD8';
+    tdTk.textContent=e.lastTk; tdTk.onclick=function(ev){ev.stopPropagation();openDetail(e.lastTk);};
+    tr.appendChild(tdCod); tr.appendChild(tdPro); tr.appendChild(tdZon); tr.appendChild(tdFal); tr.appendChild(tdTk);
+    critTbody.appendChild(tr);
   });
 }
+
 function renderMovimientosPage(){
   var tbody=document.getElementById('mov-page-tbody');if(!tbody)return;tbody.innerHTML='';
   var data=PF_DATA.filter(function(e){return e.estatus_ul_mes&&e.estatus_ul_mes!==e.estatus;});
@@ -5246,7 +5827,6 @@ function toggleRdCols() {
   _renderRdColChecks();
   panel.style.display = 'block';
 }
-
 function _renderRdColChecks() {
   var checks = document.getElementById('rd-col-checks');
   if (!checks) return;
@@ -5279,7 +5859,6 @@ function setRdCol(idx, visible) {
   _RD_COLS[idx].visible = visible;
   renderDayTable();
 }
-
 function _rdCellValue(t, key) {
   var pc = {ALTA:'#DC2626',MEDIA:'#D97706',BAJA:'#16A34A',PLUS:'#7C3AED'};
   var pb = {ALTA:'#FEE2E2',MEDIA:'#FEF3C7',BAJA:'#DCFCE7',PLUS:'#EDE9FE'};
@@ -5356,15 +5935,25 @@ function renderDayTable() {
 
   const tbody = document.getElementById('rd-tbl-body');
   if (!tbody) return;
-  tbody.innerHTML = filtered.map(function(t) {
-    var cells = visCols.map(function(c) {
-      return '<td style="padding:8px 12px;font-size:12px;color:#374151">' + _rdCellValue(t, c.key) + '</td>';
-    }).join('');
-    return '<tr style="border-bottom:1px solid #F1F5F9" onmouseover="this.style.background=\'#EFF6FF\'" onmouseout="this.style.background=\'\'">' + cells + '</tr>';
-  }).join('') || '<tr><td colspan="' + (visCols.length||9) + '" style="padding:20px;text-align:center;color:#94A3B8">Sin tickets para este día / filtro</td></tr>';
-}
+  tbody.innerHTML = '';
 
-// ── DASHBOARD CALL CENTER ──────────────────────────────────────────────
+  if (!filtered.length) {
+    tbody.innerHTML = '<tr><td colspan="' + (visCols.length||9) + '" style="padding:20px;text-align:center;color:#94A3B8">Sin tickets para este día / filtro</td></tr>';
+    return;
+  }
+
+  filtered.forEach(function(t) {
+    var tr = document.createElement('tr');
+    tr.style.cssText = 'border-bottom:1px solid #F1F5F9;cursor:pointer';
+    tr.onmouseover = function(){ this.style.background='#EFF6FF'; };
+    tr.onmouseout  = function(){ this.style.background=''; };
+    (function(n){ tr.onclick = function(){ openDetail(n); }; })(t.n);
+    tr.innerHTML = visCols.map(function(c) {
+      return '<td style="padding:8px 12px;font-size:12px;color:#374151">' + (_rdCellValue(t, c.key)||'—') + '</td>';
+    }).join('');
+    tbody.appendChild(tr);
+  });
+}
 function initCC() {
   renderMensajesNoLeidos();
   const now = new Date();
@@ -5582,35 +6171,22 @@ function setCcCol(idx, visible) {
 }
 
 function renderCCTable() {
-  const tks    = window._ccTks || [];
+  const tks = (window._ccTks || []).slice().sort(function(a,b){
+    // Más nuevo primero: ordenar por fecha de reporte descendente
+    if ((b.fr||'') > (a.fr||'')) return 1;
+    if ((b.fr||'') < (a.fr||'')) return -1;
+    return (b.n||'') > (a.n||'') ? 1 : -1;
+  });
   const search = ((document.getElementById('cc-search')&&document.getElementById('cc-search').value)||'').toLowerCase();
   const fEt    = (document.getElementById('cc-filter-et')&&document.getElementById('cc-filter-et').value)||'';
-  let items = tks;
-  if (search) items = items.filter(t=>((t.n||'')+(t.pro||'')+(t.asu||'')+(t.zon||'')).toLowerCase().includes(search));
-  if (fEt)   items = items.filter(t=>t.et===fEt);
 
-  const cnt = document.getElementById('cc-count');
-  if(cnt) cnt.textContent = items.length+' tickets';
+  _ccFiltered = tks;
+  if (search) _ccFiltered = _ccFiltered.filter(t=>((t.n||'')+(t.pro||'')+(t.asu||'')+(t.zon||'')).toLowerCase().includes(search));
+  if (fEt)    _ccFiltered = _ccFiltered.filter(t=>t.et===fEt);
 
-  var visCols = _CC_COLS.filter(function(c){ return c.visible; });
-
-  var thead = document.getElementById('cc-tbl-thead');
-  if (thead) {
-    thead.innerHTML = '<tr>' + visCols.map(function(c) {
-      return '<th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:rgba(255,255,255,.85)">' + c.label + '</th>';
-    }).join('') + '</tr>';
-  }
-
-  const tbody = document.getElementById('cc-tbl-body');
-  if (!tbody) return;
-  tbody.innerHTML = items.slice(0,200).map(function(t) {
-    var cells = visCols.map(function(c) {
-      return '<td style="padding:8px 12px;font-size:12px;color:#374151">' + _rdCellValue(t, c.key) + '</td>';
-    }).join('');
-    return '<tr style="border-bottom:1px solid #F1F5F9" onmouseover="this.style.background=\'#EFF6FF\'" onmouseout="this.style.background=\'\'">'+cells+'</tr>';
-  }).join('') || '<tr><td colspan="'+(visCols.length||7)+'" style="padding:20px;text-align:center;color:#94A3B8">Sin tickets para este período / filtro</td></tr>';
+  _ccPage = 0; // reset to first page on filter change
+  _renderCCPage();
 }
-
 
 function openCCDetail(type) {
   // Close all CC details first
@@ -6957,6 +7533,346 @@ if (document.readyState === 'loading') {
 
 
 
+
+function renderCCTopTablas(tks) {
+  // ── Top 20 Equipos ─────────────────────────────────────────────
+  var eqMap = {};
+  tks.forEach(function(t) {
+    if (!t.cod) return;
+    if (!eqMap[t.cod]) {
+      var pf = PF_DATA.find(function(e){ return e.cod === t.cod; });
+      eqMap[t.cod] = {
+        cod:  t.cod,
+        zon:  t.zon  || (pf ? pf.zon : '—'),
+        pro:  t.pro  || (pf ? pf.pro : '—'),
+        ref:  pf ? (pf.ref || '—') : '—',
+        blt:  0,
+        cli:  0,
+        total: 0
+      };
+    }
+    eqMap[t.cod].total++;
+    if (t.res === 'BLT')     eqMap[t.cod].blt++;
+    if (t.res === 'CLIENTE') eqMap[t.cod].cli++;
+  });
+
+  var topEq = Object.values(eqMap)
+    .sort(function(a,b){ return b.total - a.total; })
+    .slice(0, 20);
+
+  var tbodyEq = document.getElementById('cc-top-equipos-tbody');
+  if (tbodyEq) {
+    tbodyEq.innerHTML = '';
+    if (!topEq.length) {
+      tbodyEq.innerHTML = '<tr><td colspan="7" style="padding:16px;text-align:center;color:#94A3B8;font-size:12px">Sin datos</td></tr>';
+    } else {
+      topEq.forEach(function(e) {
+        var critico = isCritico(e.cod) ? '💥' : '';
+        var tr = document.createElement('tr');
+        tr.style.cssText = 'border-bottom:1px solid #F1F5F9';
+        tr.innerHTML =
+          '<td style="padding:8px 12px;font-size:12px">' + e.zon + '</td>' +
+          '<td style="padding:8px 12px;font-size:12px">' + e.pro + '</td>' +
+          '<td style="padding:8px 12px;font-size:12px">' + e.ref + '</td>' +
+          '<td style="padding:8px 12px;font-size:12px;text-align:center;font-weight:700;color:#0D2E6E">' + e.total + '</td>' +
+          '<td style="padding:8px 12px;font-size:12px;text-align:center">' + e.blt + '</td>' +
+          '<td style="padding:8px 12px;font-size:12px;text-align:center">' + e.cli + '</td>' +
+          '<td style="padding:8px 12px;font-size:12px;text-align:center">' + critico + '</td>';
+        tbodyEq.appendChild(tr);
+      });
+    }
+  }
+
+  // ── Top Proyectos ───────────────────────────────────────────────
+  var proMap = {};
+  tks.forEach(function(t) {
+    if (!t.pro) return;
+    if (!proMap[t.pro]) {
+      // Get zona from first ticket or portafolio
+      var pf = PF_DATA.find(function(e){ return e.pro === t.pro; });
+      proMap[t.pro] = {
+        pro:   t.pro,
+        zon:   t.zon || (pf ? pf.zon : '—'),
+        blt:   0,
+        cli:   0,
+        total: 0
+      };
+    }
+    proMap[t.pro].total++;
+    if (t.res === 'BLT')     proMap[t.pro].blt++;
+    if (t.res === 'CLIENTE') proMap[t.pro].cli++;
+  });
+
+  var topPro = Object.values(proMap)
+    .sort(function(a,b){ return b.total - a.total; })
+    .slice(0, 20);
+
+  var tbodyPro = document.getElementById('cc-top-proyectos-tbody');
+  if (tbodyPro) {
+    tbodyPro.innerHTML = '';
+    if (!topPro.length) {
+      tbodyPro.innerHTML = '<tr><td colspan="7" style="padding:16px;text-align:center;color:#94A3B8;font-size:12px">Sin datos</td></tr>';
+    } else {
+      topPro.forEach(function(p) {
+        // Equipos activos en el proyecto
+        var activos = PF_DATA.filter(function(e){
+          return e.pro === p.pro && !e.inactivo && e.estatus !== 'No en Servicio';
+        }).length;
+        // Equipos críticos en el proyecto
+        var criticos = PF_DATA.filter(function(e){
+          return e.pro === p.pro && isCritico(e.cod);
+        }).length;
+        var critStr = criticos > 0 ? '💥 (' + criticos + ')' : '';
+        var tr = document.createElement('tr');
+        tr.style.cssText = 'border-bottom:1px solid #F1F5F9';
+        tr.innerHTML =
+          '<td style="padding:8px 12px;font-size:12px">' + p.zon + '</td>' +
+          '<td style="padding:8px 12px;font-size:12px;font-weight:600">' + p.pro + '</td>' +
+          '<td style="padding:8px 12px;font-size:12px;text-align:center">' + activos + '</td>' +
+          '<td style="padding:8px 12px;font-size:12px;text-align:center;font-weight:700;color:#0D2E6E">' + p.total + '</td>' +
+          '<td style="padding:8px 12px;font-size:12px;text-align:center">' + p.blt + '</td>' +
+          '<td style="padding:8px 12px;font-size:12px;text-align:center">' + p.cli + '</td>' +
+          '<td style="padding:8px 12px;font-size:12px;text-align:center">' + critStr + '</td>';
+        tbodyPro.appendChild(tr);
+      });
+    }
+  }
+}
+
+// === renderCCTable ===
+var _ccPage = 0;
+var _ccPageSize = 30;
+var _ccFiltered = [];
+
+function ccChangePage(dir) {
+  var totalPages = Math.ceil(_ccFiltered.length / _ccPageSize);
+  _ccPage = Math.max(0, Math.min(_ccPage + dir, totalPages - 1));
+  _renderCCPage();
+}
+
+function _renderCCPage() {
+  var totalPages = Math.max(1, Math.ceil(_ccFiltered.length / _ccPageSize));
+  var start = _ccPage * _ccPageSize;
+  var pageItems = _ccFiltered.slice(start, start + _ccPageSize);
+
+  var cnt = document.getElementById('cc-count');
+  if (cnt) cnt.textContent = _ccFiltered.length + ' tickets';
+
+  var info = document.getElementById('cc-page-info');
+  if (info) info.textContent = 'Página ' + (_ccPage+1) + ' de ' + totalPages + ' (' + _ccFiltered.length + ' tickets)';
+
+  var prev = document.getElementById('cc-page-prev');
+  var next = document.getElementById('cc-page-next');
+  if (prev) prev.disabled = _ccPage === 0;
+  if (next) next.disabled = _ccPage >= totalPages - 1;
+
+  var visCols = _CC_COLS.filter(function(c){ return c.visible; });
+
+  var thead = document.getElementById('cc-tbl-thead');
+  if (thead) {
+    thead.innerHTML = '<tr>' + visCols.map(function(c) {
+      return '<th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:rgba(255,255,255,.85)">' + c.label + '</th>';
+    }).join('') + '</tr>';
+  }
+
+  var tbody = document.getElementById('cc-tbl-body');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+
+  if (!pageItems.length) {
+    tbody.innerHTML = '<tr><td colspan="' + (visCols.length||7) + '" style="padding:20px;text-align:center;color:#94A3B8">Sin tickets para este período / filtro</td></tr>';
+    return;
+  }
+
+  pageItems.forEach(function(t) {
+    var tr = document.createElement('tr');
+    tr.style.cssText = 'border-bottom:1px solid #F1F5F9;cursor:pointer';
+    tr.onmouseover = function(){ this.style.background='#EFF6FF'; };
+    tr.onmouseout  = function(){ this.style.background=''; };
+    (function(n){ tr.onclick = function(){ openDetail(n); }; })(t.n);
+    tr.innerHTML = visCols.map(function(c) {
+      return '<td style="padding:8px 12px;font-size:12px;color:#374151">' + (_rdCellValue(t, c.key)||'—') + '</td>';
+    }).join('');
+    tbody.appendChild(tr);
+  });
+}
+  renderCCTopTablas(tks);
+
+// === renderCCTopTablas ===
+
+
+
+// === renderCriticos ===
+function renderCriticos() {
+  window._critRows = [];
+  var dias   = parseInt(document.getElementById('crit-dias') ? document.getElementById('crit-dias').value : 35) || 35;
+  var minFal = parseInt(document.getElementById('crit-min-fallas') ? document.getElementById('crit-min-fallas').value : 3) || 3;
+  var cutoff = new Date(); cutoff.setDate(cutoff.getDate() - dias);
+  var cutStr = cutoff.toISOString().slice(0,10);
+  var now    = new Date().toISOString().slice(0,10);
+
+  // Build per-equipo stats
+  var byEq = {};
+  ALL_TICKETS.forEach(function(t) {
+    if (!t.cod || !t.fr || t.fr < cutStr) return;
+    if (!byEq[t.cod]) byEq[t.cod] = { blt:0, cli:0, total:0, lastBlt:null, lastCli:null, lastCall:null };
+    byEq[t.cod].total++;
+    if (t.res==='BLT')     { byEq[t.cod].blt++; if (!byEq[t.cod].lastBlt || t.fs>byEq[t.cod].lastBlt) byEq[t.cod].lastBlt=t.fs; }
+    if (t.res==='CLIENTE') { byEq[t.cod].cli++; if (!byEq[t.cod].lastCli || t.fs>byEq[t.cod].lastCli) byEq[t.cod].lastCli=t.fs; }
+    if (!byEq[t.cod].lastCall || t.fr>byEq[t.cod].lastCall) byEq[t.cod].lastCall=t.fr;
+  });
+
+  // Filter by minFal BLT
+  var criticos = Object.keys(byEq)
+    .filter(function(cod){ return byEq[cod].blt >= minFal; })
+    .map(function(cod) {
+      var eq  = (PF_DATA||[]).find(function(e){ return e.cod===cod; }) || {};
+      var tks = ALL_TICKETS.filter(function(t){ return t.cod===cod; });
+      var tksYear = tks.filter(function(t){ return t.fr && t.fr.slice(0,4) === now.slice(0,4); });
+      // MTBC
+      var cerrados = tks.filter(function(t){ return t.et==='Cerrado'&&t.fs&&t.fr; })
+        .sort(function(a,b){ return a.fs>b.fs?1:-1; });
+      var gaps = [];
+      for (var i=1;i<cerrados.length;i++){
+        var d=(new Date(cerrados[i].fr)-new Date(cerrados[i-1].fs))/(1000*60*60*24);
+        if(d>0) gaps.push(d);
+      }
+      var mtbc = gaps.length ? Math.round(gaps.reduce(function(a,b){return a+b;},0)/gaps.length) : null;
+      return {
+        cod:     cod,
+        zon:     eq.zon||tks[0]&&tks[0].zon||'—',
+        pro:     eq.pro||tks[0]&&tks[0].pro||'—',
+        ref:     eq.ref||'—',
+        operativo: eq.estatus||'—',
+        callyear:  tksYear.length,
+        blt:     byEq[cod].blt,
+        bltN:    byEq[cod].blt,
+        lastBlt: byEq[cod].lastBlt,
+        cli:     byEq[cod].cli,
+        lastCli: byEq[cod].lastCli,
+        last:    byEq[cod].lastCall,
+        mtbc:    mtbc
+      };
+    })
+    .sort(function(a,b){ return b.blt-a.blt; });
+
+  window._critRows    = criticos;
+  window._critFilters = { dias:dias, minFal:minFal };
+
+  // Rebuild _critSet
+  window._critSet = new Set(criticos.map(function(e){ return e.cod; }));
+
+  var cnt = document.getElementById('crit-count');
+  if (cnt) cnt.textContent = criticos.length + ' equipos críticos';
+
+  var tbody = document.getElementById('crit-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+
+  if (!criticos.length) {
+    tbody.innerHTML = '<tr><td colspan="12" style="padding:20px;text-align:center;color:#94A3B8;font-size:12px">Sin equipos críticos para este período / filtro</td></tr>';
+    return;
+  }
+
+  criticos.forEach(function(eq) {
+    var diasBlt = eq.lastBlt ? Math.round((new Date(now)-new Date(eq.lastBlt))/(1000*60*60*24)) : null;
+    var diasCli = eq.lastCli ? Math.round((new Date(now)-new Date(eq.lastCli))/(1000*60*60*24)) : null;
+    var tr = document.createElement('tr');
+    tr.style.cssText = 'border-bottom:1px solid #FEF2F2;cursor:pointer';
+    tr.onmouseover = function(){ this.style.background='#FEF2F2'; };
+    tr.onmouseout  = function(){ this.style.background=''; };
+    (function(cod){ tr.onclick=function(){ openEqPage(cod); }; })(eq.cod);
+    tr.innerHTML =
+      '<td style="padding:8px 10px;font-size:12px">'+eq.zon+'</td>'+
+      '<td style="padding:8px 10px;font-size:12px;color:#1B4FD8;cursor:pointer" onclick="event.stopPropagation();openProyPage(''+eq.pro+'')">'+eq.pro+'</td>'+
+      '<td style="padding:8px 10px;font-size:12px;font-weight:700">💥 '+eq.cod+'</td>'+
+      '<td style="padding:8px 10px;font-size:12px">'+eq.ref+'</td>'+
+      '<td style="padding:8px 10px;font-size:12px">'+eq.operativo+'</td>'+
+      '<td style="padding:8px 6px;font-size:12px;text-align:center">'+eq.callyear+'</td>'+
+      '<td style="padding:8px 6px;text-align:center"><span style="background:#FEF2F2;color:#DC2626;border-radius:12px;padding:2px 8px;font-weight:700;font-size:12px">'+eq.blt+'</span></td>'+
+      '<td style="padding:8px 6px;font-size:12px;text-align:center;color:'+(diasBlt!==null&&diasBlt<=7?'#DC2626':'#374151')+'">'+( diasBlt!==null?diasBlt+' d':'—')+'</td>'+
+      '<td style="padding:8px 6px;font-size:12px;text-align:center;color:#D97706">'+eq.cli+'</td>'+
+      '<td style="padding:8px 6px;font-size:12px;text-align:center">'+( diasCli!==null?diasCli+' d':'—')+'</td>'+
+      '<td style="padding:8px 6px;font-size:12px;text-align:center">'+( eq.mtbc!==null?eq.mtbc+' d':'—')+'</td>'+
+      '<td style="padding:8px 6px;text-align:center"><button class="btn btn-sm" onclick="event.stopPropagation();openEqPage(''+eq.cod+'')" style="font-size:10px;height:24px">Ver</button></td>';
+    tbody.appendChild(tr);
+  });
+}
+
+// === renderProyCriticos ===
+function renderProyCriticos() {
+  var dias   = parseInt(document.getElementById('crit-pro-dias') ? document.getElementById('crit-pro-dias').value : 35) || 35;
+  var minFal = parseInt(document.getElementById('crit-pro-min-fallas') ? document.getElementById('crit-pro-min-fallas').value : 5) || 5;
+  var cutoff = new Date(); cutoff.setDate(cutoff.getDate() - dias);
+  var cutStr = cutoff.toISOString().slice(0,10);
+
+  var proMap = {};
+  ALL_TICKETS.forEach(function(t) {
+    if (!t.pro || !t.fr || t.fr < cutStr) return;
+    if (!proMap[t.pro]) proMap[t.pro] = { pro:t.pro, zon:t.zon||'—', blt:0 };
+    if (t.res==='BLT') proMap[t.pro].blt++;
+  });
+
+  var proyCriticos = Object.values(proMap)
+    .filter(function(p){ return p.blt >= minFal; })
+    .sort(function(a,b){ return b.blt-a.blt; });
+
+  window._proyCritRows    = proyCriticos;
+  window._proyCritFilters = { dias:dias, minFal:minFal };
+
+  var cnt = document.getElementById('crit-pro-count');
+  if (cnt) cnt.textContent = proyCriticos.length + ' proyectos críticos';
+
+  var tbody = document.getElementById('crit-pro-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+
+  if (!proyCriticos.length) {
+    tbody.innerHTML = '<tr><td colspan="5" style="padding:20px;text-align:center;color:#94A3B8;font-size:12px">Sin proyectos críticos para este período / filtro</td></tr>';
+    return;
+  }
+
+  proyCriticos.forEach(function(p) {
+    var activos  = (PF_DATA||[]).filter(function(e){ return e.pro===p.pro && e.estatus!=='Fuera de Servicio'; }).length;
+    var criticos = (PF_DATA||[]).filter(function(e){ return e.pro===p.pro && isCritico(e.cod); }).length;
+    var tr = document.createElement('tr');
+    tr.style.cssText = 'border-bottom:1px solid #FEF2F2;cursor:pointer';
+    tr.onmouseover = function(){ this.style.background='#FEF2F2'; };
+    tr.onmouseout  = function(){ this.style.background=''; };
+    (function(pro){ tr.onclick=function(){ openProyPage(pro); }; })(p.pro);
+    tr.innerHTML =
+      '<td style="padding:8px 10px;font-size:12px">'+p.zon+'</td>'+
+      '<td style="padding:8px 10px;font-size:12px;font-weight:600;color:#1B4FD8">'+p.pro+'</td>'+
+      '<td style="padding:8px 6px;font-size:12px;text-align:center">'+activos+'</td>'+
+      '<td style="padding:8px 6px;text-align:center"><span style="background:#FEF2F2;color:#DC2626;border-radius:12px;padding:2px 8px;font-weight:700;font-size:12px">'+p.blt+'</span></td>'+
+      '<td style="padding:8px 6px;font-size:12px;text-align:center">'+(criticos>0?'💥 ('+criticos+')':'—')+'</td>';
+    tbody.appendChild(tr);
+  });
+}
+
+// === exportProyCriticosPDF ===
+function exportProyCriticosPDF() {
+  if (!window._proyCritRows||!window._proyCritRows.length) { alert('Sin proyectos críticos para exportar.'); return; }
+  if (typeof window.jspdf==='undefined') { alert('Librería PDF no cargó.'); return; }
+  var jsPDF=window.jspdf.jsPDF;
+  var doc=new jsPDF({orientation:'landscape',unit:'pt',format:'letter'});
+  var dias=(window._proyCritFilters&&window._proyCritFilters.dias)||35;
+  var minFal=(window._proyCritFilters&&window._proyCritFilters.minFal)||5;
+  var fecha=new Date().toLocaleDateString('es-MX',{day:'2-digit',month:'long',year:'numeric'});
+  doc.setFontSize(14);doc.setTextColor(220,38,38);
+  doc.text('Proyectos Críticos — BLT Brilliant',40,40);
+  doc.setFontSize(9);doc.setTextColor(100,116,139);
+  doc.text('Fallas BLT mín: '+minFal+'  |  Período: '+dias+' días  |  Generado: '+fecha,40,56);
+  var rows=window._proyCritRows.map(function(p){
+    var activos=(PF_DATA||[]).filter(function(e){return e.pro===p.pro&&e.estatus!=='Fuera de Servicio';}).length;
+    var criticos=(PF_DATA||[]).filter(function(e){return e.pro===p.pro&&isCritico(e.cod);}).length;
+    return [p.zon,p.pro,activos,p.blt,criticos>0?criticos+' equipos':'—'];
+  });
+  doc.autoTable({startY:68,head:[['Zona','Proyecto','Equipos activos','Fallas BLT','Equipos críticos']],
+    body:rows,theme:'grid',headStyles:{fillColor:[220,38,38],textColor:255,fontSize:9},
+    bodyStyles:{fontSize:8},alternateRowStyles:{fillColor:[254,242,242]}});
+  doc.save('proyectos_criticos.pdf');
+}
 </script>
 
 <!-- Critical equipment detail panel -->
